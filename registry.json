@@ -1,8 +1,100 @@
 {
   "_meta": {
     "version": "1.0.0",
-    "generated": "auto — CI aktualizuje po každém merge",
-    "repo": "ghostfactory/agent-store"
+    "generated": "auto — CI",
+    "repo": "ghostfactory/agent-store",
+    "count": 9
   },
-  "agents": []
+  "agents": [
+    {
+      "name": "analytik",
+      "version": "1.0.0",
+      "category": "data",
+      "description": "Analyzes data, creates reports and visualizations. Use when the user needs to process datasets, generate overviews, compare values, or understand trends in numbers.",
+      "tags": "[data, reporting, analytics, csv, excel]",
+      "author": "GhostFactory",
+      "path": "agents/analytik",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "auditor",
+      "version": "1.0.0",
+      "category": "qa",
+      "description": "Reviews, verifies, and audits outputs from other agents or users. Use for fact-checking, code review, quality control of text, or verifying the correctness of data and calculations.",
+      "tags": "[qa, review, fact-check, audit, verification]",
+      "author": "GhostFactory",
+      "path": "agents/auditor",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "browser-agent",
+      "version": "1.0.0",
+      "category": "browser",
+      "description": "Browses the web, scrapes data, tests UI flows, and collects information from websites. Use for web scraping, price monitoring, multi-source data collection, or automated web testing.",
+      "tags": "[browser, scraping, web, automation, monitoring]",
+      "author": "GhostFactory",
+      "path": "agents/browser-agent",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "creator",
+      "version": "1.0.0",
+      "category": "content",
+      "description": "Creates written content — posts, articles, copy, emails, scripts. Use when the user needs to write, rewrite, or improve any text for publication or communication.",
+      "tags": "[content, copywriting, social-media, email, blog]",
+      "author": "GhostFactory",
+      "path": "agents/creator",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "data-extractor",
+      "version": "1.0.0",
+      "category": "data",
+      "description": "Extracts, cleans, and transforms structured data from any source — websites, PDFs, CSVs, JSON, HTML, plain text, or API responses. Use whenever a user needs to pull data out of an unstructured or semi-structured source, normalize messy data, convert between formats, or prepare data for downstream processing. Activate for requests like \"extract data from\", \"scrape this page\", \"parse this file\", \"convert this to JSON\", \"clean up this CSV\", \"pull all the prices from\", or \"get me a list of\".",
+      "tags": "[extraction, parsing, scraping, csv, json, pdf, transformation, cleaning, etl]",
+      "author": "GhostFactory",
+      "path": "agents/data-extractor",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "email-responder",
+      "version": "1.0.0",
+      "category": "communication",
+      "description": "Reads incoming emails, categorizes them by intent, and drafts or sends appropriate responses in the brand's voice. Use whenever a user needs to automate email replies, handle inbox triage, respond to support emails, or process high volumes of incoming messages. Activate for requests like \"respond to my emails\", \"automate email replies\", \"triage my inbox\", \"draft email responses\", or \"handle customer emails\".",
+      "tags": "[email, inbox, automation, triage, reply, draft, communication]",
+      "author": "GhostFactory",
+      "path": "agents/email-responder",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "researcher",
+      "version": "1.0.0",
+      "category": "data",
+      "description": "Researches topics thoroughly using multiple sources, cross-references information, and delivers structured reports with citations. Use whenever a user needs in-depth research, competitive analysis, market research, fact-checking across sources, literature review, or any task requiring synthesis of information from multiple places. Activate for requests like \"research this topic\", \"find information about\", \"summarize what's known about\", \"compare these options\", \"what does the internet say about\", or \"give me a report on\".",
+      "tags": "[research, analysis, reports, citations, fact-checking, summarization, web-search]",
+      "author": "GhostFactory",
+      "path": "agents/researcher",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "strategist",
+      "version": "1.0.0",
+      "category": "strategy",
+      "description": "Creates strategic plans, analyzes markets, and recommends business decisions. Use for product strategy, go-to-market plans, competitive analysis, or decision-making frameworks.",
+      "tags": "[strategy, business, planning, market-analysis, gtm]",
+      "author": "GhostFactory",
+      "path": "agents/strategist",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "support-bot",
+      "version": "1.0.0",
+      "category": "communication",
+      "description": "Handles customer support conversations — answers questions, resolves issues, and escalates to a human agent when needed. Use this agent whenever a user needs a customer-facing support assistant, FAQ bot, help desk agent, or any conversational support interface. Activate for requests like \"build me a support bot\", \"answer customer questions\", \"create a help assistant\", or \"handle support tickets\".",
+      "tags": "[support, customer-service, chatbot, faq, helpdesk, escalation]",
+      "author": "GhostFactory",
+      "path": "agents/support-bot",
+      "has_agent_yaml": true
+    }
+  ]
 }
