@@ -1,0 +1,27 @@
+name: adr-creator
+version: 2.0.0
+category: qa
+provider_config: ../../model_config.yaml
+
+# Powerful model — root cause analysis and pattern detection
+# across multiple logs and failure types requires strong reasoning
+default_model: powerful
+allowed_models:
+  - smart
+  - powerful
+
+connectors:
+  - file-ops
+
+max_steps: 15
+
+config:
+  adr_directory: "adr/"
+  adr_index_file: "adr/INDEX.md"
+  pattern_threshold: 3           # occurrences before auto-creating ADR
+  critical_auto_adr: true        # security/data-loss = ADR on first occurrence
+  watch_list_file: "adr/WATCH.md"
+  evidence_required: true        # never write ADR without cited evidence
+
+skills:
+  - ../../skills/file-ops

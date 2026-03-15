@@ -1,0 +1,26 @@
+name: orchestrator
+version: 1.0.0
+category: automation
+provider_config: ../../model_config.yaml
+
+# Powerful model — planning and coordination requires strong reasoning
+default_model: powerful
+allowed_models:
+  - smart
+  - powerful
+
+connectors:
+  - file-ops
+
+# High max_steps — orchestrator manages multiple sub-pipelines
+max_steps: 30
+
+config:
+  max_agents_per_pipeline: 8
+  max_retries_per_step: 1
+  parallel_execution: true
+  export_pipeline: true
+  pipeline_export_format: "yaml"
+
+skills:
+  - ../../skills/file-ops
