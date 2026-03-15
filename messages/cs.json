@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "language": "cs",
+    "version": "1.0.0"
+  },
+  "nav": {
+    "missions": "Mise",
+    "store": "Agent Store",
+    "dashboard": "Přehled",
+    "settings": "Nastavení"
+  },
+  "mission": {
+    "start": "Spustit misi",
+    "complete": "Mise splněna!",
+    "failed": "Mise selhala",
+    "progress": "Probíhá",
+    "locked": "Zamčeno",
+    "unlock": "Odemknout"
+  },
+  "agent": {
+    "run": "Spustit agenta",
+    "configure": "Nastavit",
+    "model": "Model",
+    "connectors": "Konektory",
+    "steps": "Kroky",
+    "status": {
+      "idle": "Čeká",
+      "running": "Běží",
+      "done": "Hotovo",
+      "error": "Chyba"
+    }
+  },
+  "model": {
+    "fast": "Rychlý",
+    "smart": "Vyvážený",
+    "powerful": "Výkonný",
+    "gpt": "GPT-4o",
+    "gemini": "Gemini Flash",
+    "local": "Lokální"
+  },
+  "store": {
+    "browse": "Procházet agenty",
+    "install": "Nainstalovat",
+    "installed": "Nainstalováno",
+    "community": "Komunita",
+    "official": "Oficiální"
+  },
+  "common": {
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "delete": "Smazat",
+    "edit": "Upravit",
+    "back": "Zpět",
+    "next": "Další",
+    "loading": "Načítám...",
+    "error": "Něco se pokazilo",
+    "success": "Hotovo"
+  }
+}

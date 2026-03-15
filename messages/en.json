@@ -1,0 +1,59 @@
+{
+  "_meta": {
+    "language": "en",
+    "version": "1.0.0"
+  },
+  "nav": {
+    "missions": "Missions",
+    "store": "Agent Store",
+    "dashboard": "Dashboard",
+    "settings": "Settings"
+  },
+  "mission": {
+    "start": "Start Mission",
+    "complete": "Mission Complete!",
+    "failed": "Mission Failed",
+    "progress": "In Progress",
+    "locked": "Locked",
+    "unlock": "Unlock"
+  },
+  "agent": {
+    "run": "Run Agent",
+    "configure": "Configure",
+    "model": "Model",
+    "connectors": "Connectors",
+    "steps": "Steps",
+    "status": {
+      "idle": "Idle",
+      "running": "Running",
+      "done": "Done",
+      "error": "Error"
+    }
+  },
+  "model": {
+    "fast": "Fast",
+    "smart": "Balanced",
+    "powerful": "Powerful",
+    "gpt": "GPT-4o",
+    "gemini": "Gemini Flash",
+    "local": "Local"
+  },
+  "store": {
+    "browse": "Browse Agents",
+    "install": "Install",
+    "installed": "Installed",
+    "community": "Community",
+    "official": "Official"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "success": "Success"
+  }
+}

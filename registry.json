@@ -1,60 +1,8 @@
 {
   "_meta": {
     "version": "1.0.0",
-    "generated": "auto — CI",
-    "repo": "ghostfactory/agent-store",
-    "count": 5
+    "generated": "auto — CI aktualizuje po každém merge",
+    "repo": "ghostfactory/agent-store"
   },
-  "agents": [
-    {
-      "name": "analytik",
-      "version": "1.0.0",
-      "category": "data",
-      "description": "Analyzuje data, vytváří reporty a vizualizace. Použij když uživatel potřebuje zpracovat data, vytvořit přehled, porovnat hodnoty, nebo pochopit trendy v číslech.",
-      "tags": "[data, reporting, analytics, csv, excel]",
-      "author": "GhostFactory",
-      "path": "agents/analytik",
-      "has_agent_yaml": true
-    },
-    {
-      "name": "auditor",
-      "version": "1.0.0",
-      "category": "qa",
-      "description": "Kontroluje, ověřuje a audituje výstupy jiných agentů nebo uživatelů. Použij když potřebuješ fact-checking, review kódu, kontrolu kvality textu nebo ověření správnosti dat.",
-      "tags": "[qa, review, fact-check, audit, verification]",
-      "author": "GhostFactory",
-      "path": "agents/auditor",
-      "has_agent_yaml": true
-    },
-    {
-      "name": "browser-agent",
-      "version": "1.0.0",
-      "category": "browser",
-      "description": "Prochází web, scrape data, testuje UI a sbírá informace z webových stránek. Použij pro web scraping, monitoring cen, sběr dat z více zdrojů nebo automatizované testování webu.",
-      "tags": "[browser, scraping, web, automation, monitoring]",
-      "author": "GhostFactory",
-      "path": "agents/browser-agent",
-      "has_agent_yaml": true
-    },
-    {
-      "name": "creator",
-      "version": "1.0.0",
-      "category": "content",
-      "description": "Vytváří textový obsah — posty, články, copy, emaily, skripty. Použij když uživatel potřebuje napsat, přepsat nebo vylepšit jakýkoliv text pro publikaci nebo komunikaci.",
-      "tags": "[content, copywriting, social-media, email, blog]",
-      "author": "GhostFactory",
-      "path": "agents/creator",
-      "has_agent_yaml": true
-    },
-    {
-      "name": "strategist",
-      "version": "1.0.0",
-      "category": "strategy",
-      "description": "Vytváří strategické plány, analyzuje trhy a navrhuje business rozhodnutí. Použij pro product strategy, go-to-market plány, competitive analysis nebo rozhodovací frameworky.",
-      "tags": "[strategy, business, planning, market-analysis, gtm]",
-      "author": "GhostFactory",
-      "path": "agents/strategist",
-      "has_agent_yaml": true
-    }
-  ]
+  "agents": []
 }

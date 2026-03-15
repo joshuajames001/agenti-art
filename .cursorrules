@@ -1,0 +1,25 @@
+# GhostFactory Agent Store — Cursor Rules
+
+## Skill Usage
+Before every task, check skills/ and agents/ directories.
+Read SKILL.md of any skill with 1%+ chance of helping the task.
+
+## Skills available
+- skills/web-search/SKILL.md — research, fact-checking
+- skills/file-ops/SKILL.md — file operations
+- skills/browser/SKILL.md — web automation
+- skills/email/SKILL.md — email operations
+
+## Agents available
+- agents/analytik/ — data analysis
+- agents/creator/ — content creation
+- agents/auditor/ — QA and review
+- agents/strategist/ — strategy and planning
+- agents/browser-agent/ — web scraping
+
+## Language
+All code comments, prompts, and agent instructions: English.
+UI strings: messages/ folder (EN + CS).
+
+## Models
+Use model_config.yaml aliases. Never hardcode model strings.
