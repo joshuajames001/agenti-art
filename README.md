@@ -1,6 +1,6 @@
 # 👾 GhostFactory Agent Store
 
-> Public registry of AI agents for [agenti.art](https://agenti.art)
+> Public registry of AI agents 
 
 **1 agent = 1 folder = SKILL.md + agent.yaml**
 
