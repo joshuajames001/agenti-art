@@ -3,9 +3,19 @@
     "version": "1.0.0",
     "generated": "auto — CI",
     "repo": "ghostfactory/agent-store",
-    "count": 9
+    "count": 11
   },
   "agents": [
+    {
+      "name": "adr-creator",
+      "version": "2.0.0",
+      "category": "qa",
+      "description": "Analyzes pipeline logs, errors, failures, and incidents to automatically extract patterns and generate binding Architecture Decision Records (ADRs) as preventive rules. Use whenever a pipeline fails, an agent makes a repeated mistake, a dead letter queue has entries, or an incident occurs. Activate for requests like \"why did this fail\", \"make sure this never happens again\", \"create a rule from this error\", \"analyze this log\", \"what went wrong\", \"extract rules from failures\", or \"prevent this mistake\".",
+      "tags": "[adr, rules, learning, logs, errors, incidents, prevention, enforcement, pattern-detection]",
+      "author": "GhostFactory",
+      "path": "agents/adr-creator",
+      "has_agent_yaml": true
+    },
     {
       "name": "analytik",
       "version": "1.0.0",
@@ -64,6 +74,16 @@
       "tags": "[email, inbox, automation, triage, reply, draft, communication]",
       "author": "GhostFactory",
       "path": "agents/email-responder",
+      "has_agent_yaml": true
+    },
+    {
+      "name": "orchestrator",
+      "version": "1.0.0",
+      "category": "automation",
+      "description": "Plans and coordinates multi-agent pipelines — breaks complex tasks into subtasks, assigns them to specialized agents, monitors execution, handles failures, and synthesizes final output. Use whenever a task is too complex for a single agent, requires multiple steps with dependencies, needs parallel execution, or involves routing between specialists. Activate for requests like \"build me a pipeline\", \"coordinate these agents\", \"automate this multi-step workflow\", \"run these tasks in sequence\", or any task that clearly requires more than one agent to complete well.",
+      "tags": "[orchestration, pipeline, multi-agent, workflow, coordination, planning, routing]",
+      "author": "GhostFactory",
+      "path": "agents/orchestrator",
       "has_agent_yaml": true
     },
     {
