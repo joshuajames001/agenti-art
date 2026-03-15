@@ -1,0 +1,27 @@
+name: email-responder
+version: 1.0.0
+category: communication
+provider_config: ../../model_config.yaml
+
+# Smart model — email categorization needs good reasoning
+default_model: smart
+allowed_models:
+  - smart
+  - powerful
+
+connectors:
+  - email
+  - file-ops
+
+max_steps: 10
+
+config:
+  auto_send: false                              # always draft first by default
+  require_review_for: [urgent, legal, billing]  # never auto-send these
+  log_all_actions: true
+  templates_path: "references/templates.md"
+  brand_voice_path: "references/brand-voice.md"
+
+skills:
+  - ../../skills/email
+  - ../../skills/file-ops

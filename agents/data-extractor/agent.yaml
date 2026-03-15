@@ -1,0 +1,31 @@
+name: data-extractor
+version: 1.0.0
+category: data
+provider_config: ../../model_config.yaml
+
+# Smart model — pattern recognition and schema mapping needs reasoning
+default_model: smart
+allowed_models:
+  - fast
+  - smart
+  - powerful
+
+connectors:
+  - browser
+  - file-ops
+  - web-search
+
+max_steps: 15
+
+config:
+  default_output_format: "json"
+  normalize_dates: true
+  normalize_phone: true
+  normalize_currency: true
+  deduplicate: true
+  flag_missing_fields: true
+
+skills:
+  - ../../skills/browser
+  - ../../skills/file-ops
+  - ../../skills/web-search

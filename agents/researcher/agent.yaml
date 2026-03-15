@@ -1,0 +1,26 @@
+name: researcher
+version: 1.0.0
+category: data
+provider_config: ../../model_config.yaml
+
+# Smart model — synthesis and reasoning across sources
+default_model: smart
+allowed_models:
+  - smart
+  - powerful
+
+connectors:
+  - web-search
+  - file-ops
+
+max_steps: 12
+
+config:
+  max_searches_per_task: 8
+  min_sources_for_fact: 3
+  default_output_format: "standard-report"
+  cite_all_sources: true
+
+skills:
+  - ../../skills/web-search
+  - ../../skills/file-ops
