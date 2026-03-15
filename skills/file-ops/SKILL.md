@@ -1,19 +1,19 @@
 ---
 name: file-ops
-description: Čte, zapisuje a transformuje soubory — CSV, JSON, TXT, Markdown. Použij pro práci se soubory na filesystému.
+description: Reads, writes, and transforms files — CSV, JSON, TXT, Markdown. Use for any filesystem operations.
 version: 1.0.0
 ---
 
 # File Operations Skill
 
-Práce se soubory na filesystému.
+Read, write, and transform files on the filesystem.
 
-## Operace
-- read: načti soubor a zpracuj obsah
-- write: ulož výstup do souboru
-- transform: konverze mezi formáty (CSV ↔ JSON)
-- validate: ověř strukturu souboru
+## Operations
+- **read** — load file and process content
+- **write** — save output to file
+- **transform** — convert between formats (CSV ↔ JSON)
+- **validate** — verify file structure before processing
 
-## Bezpečnost
-- Nikdy nepřepisuj soubory bez potvrzení
-- Vždy validuj vstupní data před zápisem
+## Safety Rules
+- Never overwrite files without confirmation
+- Always validate input data before writing

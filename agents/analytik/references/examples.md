@@ -1,16 +1,16 @@
-# Příklady použití — Analytik
+# Usage Examples — Analytik
 
-## Vstup
-"Mám CSV s tržbami za Q1-Q4, chci vidět trend a top 3 produkty."
+## Input
+"I have a CSV with revenue for Q1–Q4. Show me the trend and top 3 products."
 
-## Výstup (ukázka)
-| Kvartál | Tržby | Změna |
-|---------|-------|-------|
-| Q1      | 120k  | —     |
-| Q2      | 145k  | +21%  |
-| Q3      | 138k  | -5%   |
-| Q4      | 189k  | +37%  |
+## Output (sample)
+| Quarter | Revenue | Change |
+|---------|---------|--------|
+| Q1      | $120k   | —      |
+| Q2      | $145k   | +21%   |
+| Q3      | $138k   | -5%    |
+| Q4      | $189k   | +37%   |
 
-**Top 3 produkty:** Produkt A (34%), Produkt B (28%), Produkt C (19%)
-**Trend:** Rostoucí s poklesem v Q3 (sezónní výkyv).
-**Doporučení:** Zaměřit se na Q3 retention strategii.
+**Top 3 products:** Product A (34%), Product B (28%), Product C (19%)
+**Trend:** Growing overall with a Q3 dip (likely seasonal).
+**Recommendation:** Investigate Q3 retention strategy.

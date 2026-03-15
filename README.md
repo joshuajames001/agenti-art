@@ -2,49 +2,49 @@
 
 > Public registry of AI agents for [agents.art](https://agents.art)
 
-**1 agent = 1 složka = SKILL.md + agent.yaml**
+**1 agent = 1 folder = SKILL.md + agent.yaml**
 
-Compatible with Claude Code, Antigravity IDE, Cursor and agents.art runtime.
+Compatible with Claude Code, Antigravity IDE, Cursor and the agents.art runtime.
 
 ## Quick Start
 
 ```bash
-# Nainstaluj přes Claude Code
-/plugin marketplace add ghostfactory/agent-store
+# Install via Claude Code
+/plugin marketplace add joshuajames001/agenti-art
 /plugin install analytik@ghostfactory-agents
 
-# Nebo klonuj a použij přímo
-git clone https://github.com/ghostfactory/agent-store
+# Or clone and use directly
+git clone https://github.com/joshuajames001/agenti-art
 ```
 
-## Agenti
+## Agents
 
-| Agent | Kategorie | Default model |
-|-------|-----------|---------------|
-| [analytik](agents/analytik/) | data | smart |
-| [creator](agents/creator/) | content | smart |
-| [auditor](agents/auditor/) | qa | powerful |
-| [strategist](agents/strategist/) | strategy | powerful |
-| [browser-agent](agents/browser-agent/) | browser | fast |
+| Agent | Category | Default Model | Description |
+|-------|----------|---------------|-------------|
+| [analytik](agents/analytik/) | data | smart | Data analysis & reporting |
+| [creator](agents/creator/) | content | smart | Copywriting & content |
+| [auditor](agents/auditor/) | qa | powerful | QA & fact-checking |
+| [strategist](agents/strategist/) | strategy | powerful | Business & product strategy |
+| [browser-agent](agents/browser-agent/) | browser | fast | Web scraping & automation |
 
-## Přidat vlastního agenta
-
-Viz [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Struktura
+## Structure
 
 ```
 agents/
-  jmeno-agenta/
-    SKILL.md        ← instrukce + frontmatter (standard)
-    agent.yaml      ← runtime config (agents.art rozšíření)
-    references/     ← volitelné extra soubory
-skills/             ← sdílené skills (web-search, file-ops...)
-templates/          ← boilerplate pro nové agenty
-.github/workflows/  ← CI validace + auto registry update
+  agent-name/
+    SKILL.md        ← instructions + frontmatter (Anthropic standard)
+    agent.yaml      ← runtime config (agents.art extension)
+    references/     ← optional supporting files
+skills/             ← shared skills (web-search, file-ops...)
+templates/          ← boilerplate for new agents
+.github/workflows/  ← CI validation + auto registry update
 model_config.yaml   ← GhostFactory shared model config (LiteLLM)
-registry.json       ← auto-generovaný index agentů
+registry.json       ← auto-generated agent index
 ```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) — all instructions and prompts must be written in **English**.
 
 ---
 

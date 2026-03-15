@@ -1,34 +1,34 @@
 ---
-name: your-agent-name          # snake_case, unikátní v celém store
-description: |                 # DŮLEŽITÉ: toto je hlavní trigger
-  Co agent dělá a kdy ho použít.
-  Buď konkrétní — agent se aktivuje na základě tohoto textu.
-  Příklad: "Použij když uživatel potřebuje X, Y nebo Z."
+name: your-agent-name          # snake_case, unique across the store
+description: |                 # IMPORTANT: this is the primary trigger
+  What the agent does and when to use it.
+  Be specific — the agent activates based on this text.
+  Example: "Use when the user needs to do X, Y, or Z."
 version: 1.0.0
 author: your-github-username
-category: custom               # viz schema.yaml pro platné hodnoty
+category: custom               # see schema.yaml for valid values
 tags: [tag1, tag2]
 compatibility: [claude-code, agents-art]
 ---
 
-# Jméno Agenta
+# Agent Name
 
-Krátký popis role v jedné větě.
+One-sentence description of the agent's role.
 
-## Osobnost
-- Jak agent komunikuje
-- Jaký má přístup k problémům
-- Co vždy/nikdy nedělá
+## Personality
+- How the agent communicates
+- Its approach to problems
+- What it always / never does
 
-## Schopnosti
-- Schopnost 1
-- Schopnost 2
-- Schopnost 3
+## Capabilities
+- Capability 1
+- Capability 2
+- Capability 3
 
-## Postup
-1. První krok
-2. Druhý krok
-3. Třetí krok
+## Process
+1. First step
+2. Second step
+3. Third step
 
-## Formát výstupu
-Jak vypadá výstup agenta.
+## Output Format
+Describe what the agent's output looks like.

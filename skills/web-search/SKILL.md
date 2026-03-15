@@ -1,15 +1,15 @@
 ---
 name: web-search
-description: Vyhledává aktuální informace na webu. Použij pro fact-checking, research nebo získání aktuálních dat která nejsou v trénovacích datech.
+description: Searches the web for current information. Use for fact-checking, research, or retrieving up-to-date data not available in training data.
 version: 1.0.0
 ---
 
 # Web Search Skill
 
-Proveď web search pro získání aktuálních informací.
+Perform web searches to retrieve current, accurate information.
 
-## Použití
-- Vždy cituj zdroj
-- Preferuj autoritativní zdroje
-- Maximálně 5 searchů na jeden dotaz
-- Sumarizuj, nekopíruj celé texty
+## Usage Rules
+- Always cite your source
+- Prefer authoritative sources (official docs, gov sites, peer-reviewed)
+- Maximum 5 searches per task
+- Summarize — never copy full texts

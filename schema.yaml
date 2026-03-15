@@ -1,5 +1,5 @@
 # agents.art — Agent YAML Schema
-# Validace pro CI pipeline při každém PR
+# Used by CI pipeline to validate every PR
 
 version: "1.0.0"
 

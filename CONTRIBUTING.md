@@ -1,34 +1,35 @@
-# Jak přidat agenta do agents.art store
+# Contributing to GhostFactory Agent Store
 
-## Požadavky
-1. Fork tohoto repozitáře
-2. Vytvoř složku `agents/jmeno-agenta/`
-3. Přidej povinné soubory (viz níže)
-4. Otevři Pull Request
+## Requirements
+1. Fork this repository
+2. Create a folder `agents/your-agent-name/`
+3. Add the required files (see below)
+4. Open a Pull Request
 
-## Povinné soubory
+## Required Files
 
 ### SKILL.md
-Musí začínat YAML frontmatter:
+Must start with YAML frontmatter:
 ```yaml
 ---
-name: jmeno-agenta
-description: Co agent dělá a kdy ho použít. (toto je trigger)
+name: your-agent-name
+description: What the agent does and when to use it. (this is the trigger)
 version: 1.0.0
-author: tvuj-github-username
+author: your-github-username
 category: data|content|qa|strategy|automation|browser|custom
 tags: [tag1, tag2]
 ---
 ```
 
 ### agent.yaml
-Runtime konfigurace — viz `templates/starter-agent/agent.yaml`.
+Runtime configuration — see `templates/starter-agent/agent.yaml`.
 
-## Validace
-CI automaticky zkontroluje strukturu při PR.
-Merge je možný až po úspěšné validaci.
+## Validation
+CI automatically checks structure on every PR.
+Merge is only possible after successful validation.
 
-## Konvence
-- Jméno složky = `name` v SKILL.md (snake_case)
-- Verze semver: `major.minor.patch`
-- Tagy lowercase, bez mezer
+## Conventions
+- Folder name = `name` field in SKILL.md (snake_case)
+- Version in semver: `major.minor.patch`
+- Tags lowercase, no spaces
+- All instructions and prompts in **English**
