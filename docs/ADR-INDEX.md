@@ -30,6 +30,9 @@ Status values: `Draft` · `Accepted` · `Deprecated` · `Superseded by ADR-NNN`
 | [ADR-006](#adr-006) | data-extractor must never modify or delete source files | Accepted | auditor | HIGH |
 | [ADR-007](#adr-007) | All agents must validate inputs before execution | Accepted | orchestrator | MEDIUM |
 | [ADR-008](#adr-008) | model_config.yaml is the only source of model references | Accepted | CI pipeline | MEDIUM |
+| [ADR-009](#adr-009) | file-ops must create backup before delete or overwrite | Accepted | file-ops skill (self) | HIGH |
+| [ADR-010](#adr-010) | Refactoring must follow extract-verify-remove sequence | Accepted | auditor | HIGH |
+| [ADR-011](#adr-011) | Backups must be retained for 7 days or 10 pipeline runs | Accepted | orchestrator | MEDIUM |
 
 ---
 
@@ -329,3 +332,151 @@ Agents MUST NOT hardcode model strings in agent.yaml or SKILL.md.
 ---
 
 *GhostFactory · agenti.art · Agents Rule Tomorrow*
+
+---
+
+## ADR-009
+
+### file-ops must create a backup before any delete or overwrite operation
+
+**Status:** Accepted
+
+**Context:**
+Accidental deletion or overwrite of files is irreversible without a backup.
+Agents with file-ops connector can delete or overwrite files as a side effect
+of otherwise correct operations. A backup costs milliseconds — recovery costs hours.
+This rule applies to all agents using file-ops, not just data-extractor.
+
+**Rule:**
+```
+Any agent using file-ops MUST create a backup of the target file
+BEFORE executing any delete or overwrite operation.
+
+Backup location: .backups/{YYYY-MM-DD}_{original_filename}.bak
+Backup log: .backups/{YYYY-MM-DD}_backup.log (what, why, which agent)
+
+agent MUST NOT proceed with delete/overwrite if backup creation fails.
+```
+
+**Constraints:**
+- Applies to: delete, overwrite, truncate, move operations
+- Does NOT apply to: read, append-only writes to new files
+- Backup must be verified (file exists + size > 0) before proceeding
+- Temp files in /tmp: exempt (auto-cleaned by OS anyway)
+- Git-tracked files: git commit before operation counts as backup
+
+**Enforced by:**
+- Agent: file-ops skill (self-enforcing, pre-operation check)
+- Timing: immediately before every delete/overwrite call
+- Violation response: STOP operation + [ADR-009-VIOLATION] + operator alert
+
+**Agents involved:** all agents using file-ops skill
+
+---
+
+## ADR-010
+
+### Refactoring must follow extract-verify-remove sequence
+
+**Status:** Accepted
+
+**Context:**
+Refactoring that deletes the original file before verifying the new structure
+works is the most common cause of irreversible code loss. The correct sequence
+is: create new files → verify they work → only then remove the original.
+This is the "strangler fig" pattern — new growth replaces old, never the reverse.
+
+**Rule:**
+```
+Any refactoring operation MUST follow this exact sequence:
+
+1. EXTRACT — create new files with extracted logic
+   (hooks/, services/, components/, etc.)
+2. VERIFY — confirm new files are complete and functional
+   (imports resolve, no missing references, tests pass if available)
+3. REMOVE — only after verification, remove or archive original
+
+agent MUST NOT delete the original file before step 2 is complete.
+agent MUST NOT skip step 2 even if extraction looks correct.
+```
+
+**Constraints:**
+- Verification minimum: all imports resolve + no syntax errors
+- If tests exist: at least one test run required before removal
+- Original file after removal: moved to .backups/ (see ADR-009), not hard-deleted
+- Refactoring scope: applies to any operation that splits, moves, or reorganizes code
+
+**Example — correct sequence:**
+```
+page.tsx has: DB calls + UI logic + business logic
+
+EXTRACT:
+  → hooks/usePageData.ts       (state + UI logic)
+  → services/page.service.ts   (DB calls)
+  → components/PageView.tsx    (UI)
+
+VERIFY:
+  → all imports resolve
+  → page.tsx updated to use new files
+  → app runs without errors
+
+REMOVE:
+  → original logic removed from page.tsx
+  → .backups/2026-03-15_page.tsx.bak created (ADR-009)
+```
+
+**Enforced by:**
+- Agent: auditor
+- Timing: after extract step, before remove step
+- Violation response: STOP removal + request verification completion
+
+**Agents involved:** all agents performing refactoring, auditor, file-ops skill
+
+---
+
+## ADR-011
+
+### Backups must be retained for minimum 7 days or 10 pipeline runs
+
+**Status:** Accepted
+
+**Context:**
+Backups that are deleted immediately after an operation provide no safety net.
+A bug introduced during refactoring may not surface until days later.
+Retention period must be long enough to catch delayed regressions.
+Automatic expiry prevents .backups/ from growing indefinitely.
+
+**Rule:**
+```
+All backups created under ADR-009 MUST be retained for:
+- minimum 7 calendar days, AND
+- minimum 10 pipeline runs (whichever is longer)
+
+After retention period expires:
+- backup MAY be deleted automatically by cleanup job
+- deletion MUST be logged in .backups/cleanup.log
+
+Operator MAY extend retention for specific files by adding to .backups/KEEP list.
+```
+
+**Constraints:**
+- Retention clock starts at backup creation time
+- Pipeline run count tracked in .backups/backup.log
+- .backups/KEEP file: one filename per line, no expiry for listed files
+- Max .backups/ directory size: 500MB → alert operator, pause auto-cleanup
+- Cleanup job runs: after every pipeline completion
+
+**Backup log format:**
+```
+{timestamp} | {agent} | {operation} | {original_path} | {backup_path} | {run_count}
+2026-03-15T21:00:00Z | data-extractor | delete | src/data.csv | .backups/2026-03-15_data.csv.bak | run:47
+```
+
+**Enforced by:**
+- Agent: orchestrator (cleanup job after pipeline completion)
+- Timing: end of every pipeline run
+- Violation response: LOG only (retention is a safety net, not a blocker)
+
+**Agents involved:** orchestrator, file-ops skill, all agents creating backups
+
+---
