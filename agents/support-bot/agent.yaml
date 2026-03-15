@@ -1,0 +1,27 @@
+name: support-bot
+version: 1.0.0
+category: communication
+provider_config: ../../model_config.yaml
+
+# Fast model for real-time chat — low latency is critical
+default_model: fast
+allowed_models:
+  - fast
+  - smart
+
+connectors:
+  - file-ops    # read knowledge base
+  - email       # optional: send confirmation emails
+
+max_steps: 10
+
+# Support bot specific config
+config:
+  escalation_tag: "[ESCALATE:"
+  knowledge_base_path: "references/knowledge-base.md"
+  max_unanswered_before_escalation: 2
+  collect_contact_info: true
+
+skills:
+  - ../../skills/file-ops
+  - ../../skills/email
