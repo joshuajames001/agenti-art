@@ -1,0 +1,15 @@
+name: creator
+version: 1.0.0
+category: content
+provider_config: ../../model_config.yaml
+
+default_model: smart
+allowed_models:
+  - smart
+  - powerful
+  - gpt
+
+connectors:
+  - web-search
+
+max_steps: 5

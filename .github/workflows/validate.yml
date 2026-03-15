@@ -1,0 +1,42 @@
+name: Validate agents
+
+on:
+  pull_request:
+    paths:
+      - 'agents/**'
+      - 'skills/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check SKILL.md frontmatter
+        run: |
+          for skill in agents/*/SKILL.md; do
+            echo "Checking $skill..."
+            # Ověří že soubor začíná YAML frontmatter
+            if ! head -1 "$skill" | grep -q "^---$"; then
+              echo "❌ $skill missing YAML frontmatter"
+              exit 1
+            fi
+            # Ověří povinná pole
+            for field in name description version; do
+              if ! grep -q "^$field:" "$skill"; then
+                echo "❌ $skill missing required field: $field"
+                exit 1
+              fi
+            done
+            echo "✓ $skill"
+          done
+
+      - name: Check agent.yaml exists
+        run: |
+          for agent_dir in agents/*/; do
+            if [ ! -f "${agent_dir}agent.yaml" ]; then
+              echo "❌ ${agent_dir} missing agent.yaml"
+              exit 1
+            fi
+            echo "✓ ${agent_dir}agent.yaml"
+          done

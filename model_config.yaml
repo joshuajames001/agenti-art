@@ -1,0 +1,48 @@
+# GhostFactory — Shared Model Configuration
+# Single source of truth pro všechny .art produkty
+# Provider: LiteLLM (jednotné API pro všechny modely)
+
+version: "1.0.0"
+provider: litellm
+
+models:
+  fast:
+    litellm: anthropic/claude-haiku-4-5-20251001
+    label: "Rychlý"
+    description: "Real-time odpovědi, vysoký objem volání"
+    cost_tier: low
+
+  smart:
+    litellm: anthropic/claude-sonnet-4-6
+    label: "Vyvážený"
+    description: "Výchozí pro většinu agentů — reasoning + rychlost"
+    cost_tier: medium
+
+  powerful:
+    litellm: anthropic/claude-opus-4-6
+    label: "Výkonný"
+    description: "Komplexní plánování, přesnost, dlouhý kontext"
+    cost_tier: high
+
+  gpt:
+    litellm: openai/gpt-4o
+    label: "GPT-4o"
+    description: "OpenAI alternativa"
+    cost_tier: medium
+
+  gemini:
+    litellm: google/gemini-2.0-flash
+    label: "Gemini Flash"
+    description: "Google alternativa, rychlý"
+    cost_tier: low
+
+  local:
+    litellm: ollama/llama3.2
+    label: "Lokální"
+    description: "Zdarma, soukromé, běží na vlastním hardware"
+    cost_tier: free
+
+defaults:
+  fallback_model: smart
+  max_retries: 3
+  timeout_seconds: 30

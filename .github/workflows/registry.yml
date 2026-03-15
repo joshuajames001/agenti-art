@@ -1,0 +1,67 @@
+name: Update registry
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'agents/**'
+
+jobs:
+  update-registry:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate registry.json
+        run: |
+          python3 - << 'PYTHON'
+          import json, os, re
+          from pathlib import Path
+
+          agents = []
+          for skill_path in sorted(Path("agents").glob("*/SKILL.md")):
+              content = skill_path.read_text()
+              # Parsuj frontmatter
+              fm_match = re.match(r'^---\n(.*?)\n---', content, re.DOTALL)
+              if not fm_match:
+                  continue
+              fm = {}
+              for line in fm_match.group(1).split('\n'):
+                  if ':' in line:
+                      k, v = line.split(':', 1)
+                      fm[k.strip()] = v.strip().strip('"')
+
+              agent_yaml = skill_path.parent / "agent.yaml"
+              agents.append({
+                  "name": fm.get("name", ""),
+                  "version": fm.get("version", ""),
+                  "category": fm.get("category", ""),
+                  "description": fm.get("description", ""),
+                  "tags": fm.get("tags", "[]"),
+                  "author": fm.get("author", "community"),
+                  "path": str(skill_path.parent),
+                  "has_agent_yaml": agent_yaml.exists()
+              })
+
+          registry = {
+              "_meta": {
+                  "version": "1.0.0",
+                  "generated": "auto — CI",
+                  "repo": "ghostfactory/agent-store",
+                  "count": len(agents)
+              },
+              "agents": agents
+          }
+          Path("registry.json").write_text(json.dumps(registry, indent=2, ensure_ascii=False))
+          print(f"✓ Registry updated: {len(agents)} agents")
+          PYTHON
+
+      - name: Commit registry
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add registry.json
+          git diff --staged --quiet || git commit -m "chore: update registry.json [skip ci]"
+          git push

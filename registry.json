@@ -1,0 +1,8 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "generated": "auto — CI aktualizuje po každém merge",
+    "repo": "ghostfactory/agent-store"
+  },
+  "agents": []
+}

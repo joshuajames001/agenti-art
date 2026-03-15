@@ -1,0 +1,21 @@
+name: analytik
+version: 1.0.0
+category: data
+provider_config: ../../model_config.yaml
+
+default_model: smart
+allowed_models:
+  - fast
+  - smart
+  - powerful
+  - gpt
+
+connectors:
+  - web-search
+  - file-ops
+
+max_steps: 8
+
+skills:
+  - ../../skills/web-search
+  - ../../skills/file-ops

@@ -1,0 +1,25 @@
+# agents.art — Agent Runtime Configuration
+# Tento soubor rozšiřuje SKILL.md o runtime parametry
+
+name: your-agent-name          # musí odpovídat SKILL.md
+version: 1.0.0
+category: custom
+provider_config: ../../model_config.yaml
+
+# Výchozí model pro tuto roli
+# Hodnoty: fast | smart | powerful | gpt | gemini | local
+default_model: smart
+
+# Modely které může uživatel přepnout v UI
+allowed_models:
+  - fast
+  - smart
+  - powerful
+
+# MCP konektory které agent potřebuje
+# Hodnoty: web-search | file-ops | email | browser | supabase | github | slack
+connectors:
+  - web-search
+
+# Max počet kroků před ukončením (ochrana proti infinite loops)
+max_steps: 5

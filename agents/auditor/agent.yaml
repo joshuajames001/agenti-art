@@ -1,0 +1,14 @@
+name: auditor
+version: 1.0.0
+category: qa
+provider_config: ../../model_config.yaml
+
+default_model: powerful
+allowed_models:
+  - smart
+  - powerful
+
+connectors:
+  - web-search
+
+max_steps: 10

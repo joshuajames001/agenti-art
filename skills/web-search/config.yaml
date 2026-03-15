@@ -1,0 +1,8 @@
+max_queries_per_task: 5
+prefer_sources:
+  - official docs
+  - peer-reviewed
+  - gov sites
+avoid_sources:
+  - forums (unless specifically relevant)
+  - SEO farms

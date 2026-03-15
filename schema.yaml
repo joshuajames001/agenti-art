@@ -1,0 +1,50 @@
+# agents.art — Agent YAML Schema
+# Validace pro CI pipeline při každém PR
+
+version: "1.0.0"
+
+required_fields:
+  - name
+  - version
+  - category
+  - default_model
+
+optional_fields:
+  - description
+  - allowed_models
+  - connectors
+  - max_steps
+  - provider_config
+  - tags
+  - author
+  - compatibility
+
+categories:
+  - data
+  - content
+  - qa
+  - strategy
+  - automation
+  - browser
+  - communication
+  - custom
+
+valid_connectors:
+  - web-search
+  - file-ops
+  - email
+  - browser
+  - supabase
+  - github
+  - slack
+  - notion
+  - google-workspace
+  - custom-mcp
+
+valid_models:
+  - fast
+  - smart
+  - powerful
+  - gpt
+  - gemini
+  - local

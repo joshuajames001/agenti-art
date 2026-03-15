@@ -1,0 +1,15 @@
+name: strategist
+version: 1.0.0
+category: strategy
+provider_config: ../../model_config.yaml
+
+default_model: powerful
+allowed_models:
+  - smart
+  - powerful
+  - gpt
+
+connectors:
+  - web-search
+
+max_steps: 8
