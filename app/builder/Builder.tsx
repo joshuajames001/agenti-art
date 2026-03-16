@@ -1,6 +1,7 @@
 // Builder v3 - feature-slice architecture
 'use client'
 
+import { useState, useEffect } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -17,6 +18,7 @@ import { STATUS_COLOR, MODEL_COLOR } from './types'
 import { usePipeline } from './hooks/usePipeline'
 import { AgentPool } from './components/AgentPool'
 import { LogPanel } from './components/LogPanel'
+import { OutputPanel } from './components/OutputPanel'
 import { PromptInput } from './components/PromptInput'
 
 // ── Sortable node wrapper ──
@@ -139,12 +141,19 @@ export default function Builder(props: BuilderProps) {
   const {
     nodes, logs, running, done, saving, totalTokens,
     dragOver, setDragOver, userPrompt, setUserPrompt,
+    finalOutput, finalAgent, finalTokens,
     logRef, sensors, usedAgentIds,
     addAgent, handleDragEnd, removeNode,
     runPipeline, stopPipeline, savePipeline, resetPipeline,
   } = usePipeline(props)
 
   const { missionSlug, missionTitle, availableAgents } = props
+
+  const [showOutput, setShowOutput] = useState(false)
+
+  useEffect(() => {
+    if (done && finalOutput) setShowOutput(true)
+  }, [done, finalOutput])
 
   return (
     <div style={{
@@ -349,6 +358,14 @@ export default function Builder(props: BuilderProps) {
         <span>adrs: <span style={{ color: '#00e5c8' }}>3 active</span></span>
         <span style={{ marginLeft: 'auto' }}>runagent.art · v0.1.0-alpha</span>
       </div>
+
+      <OutputPanel
+        output={finalOutput}
+        agentName={finalAgent}
+        tokens={finalTokens}
+        visible={showOutput}
+        onClose={() => setShowOutput(false)}
+      />
 
       <style>{`
         @keyframes pulse-btn { 0%,100%{opacity:1} 50%{opacity:0.7} }

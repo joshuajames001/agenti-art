@@ -27,6 +27,9 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
   const [totalTokens, setTotalTokens] = useState(0)
   const [dragOver, setDragOver] = useState(false)
   const [userPrompt, setUserPrompt] = useState('')
+  const [finalOutput, setFinalOutput] = useState<string | null>(null)
+  const [finalAgent, setFinalAgent] = useState<string | null>(null)
+  const [finalTokens, setFinalTokens] = useState(0)
   const logRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
 
@@ -102,10 +105,13 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
           i === event.step ? { ...n, status: 'done', tokensUsed: event.tokens } : n
         ))
         setTotalTokens(prev => prev + event.tokens)
+        setFinalOutput(event.output)
+        setFinalAgent(event.agent)
+        setFinalTokens(event.tokens)
         addLog({
           type: 'success',
           agent: event.agent,
-          message: `${event.agent} completed · ${event.tokens.toLocaleString()} tokens · ${event.output.slice(0, 120)}${event.output.length > 120 ? '...' : ''}`,
+          message: `${event.agent} completed · ${event.tokens.toLocaleString()} tokens`,
         })
         if (event.agent === 'email-responder') {
           addLog({
@@ -237,6 +243,9 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
     setNodes(prev => prev.map(n => ({ ...n, status: 'idle', tokensUsed: 0 })))
     setTotalTokens(0)
     setDone(false)
+    setFinalOutput(null)
+    setFinalAgent(null)
+    setFinalTokens(0)
     addLog({ type: 'info', message: '─── Pipeline reset ───' })
   }
 
@@ -247,6 +256,7 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
     totalTokens,
     dragOver, setDragOver,
     userPrompt, setUserPrompt,
+    finalOutput, finalAgent, finalTokens,
     logRef,
     sensors,
     usedAgentIds,
