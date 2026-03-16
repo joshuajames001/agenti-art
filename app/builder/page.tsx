@@ -13,9 +13,9 @@ type Agent = {
 export default async function BuilderPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mission?: string; pipeline?: string }>
+  searchParams: Promise<{ mission?: string; pipeline?: string; agent?: string }>
 }) {
-  const { mission: missionSlug, pipeline: pipelineId } = await searchParams
+  const { mission: missionSlug, pipeline: pipelineId, agent: agentParam } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -87,6 +87,21 @@ export default async function BuilderPage({
           }
         })
         .filter(Boolean) as typeof initialNodes
+    }
+  }
+
+  // Pre-add agent from ?agent= query param
+  if (agentParam && !initialNodes) {
+    const agent = availableAgents.find(a => a.name === agentParam)
+    if (agent) {
+      initialNodes = [{
+        id: Math.random().toString(36),
+        agent,
+        status: 'idle' as const,
+        tokensUsed: 0 as const,
+        stepOrder: 1,
+        inputFromStep: null,
+      }]
     }
   }
 
