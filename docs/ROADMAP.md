@@ -1,7 +1,7 @@
 # runagent.art — Roadmap
 
 > Living document — updated as priorities shift.
-> Last updated: March 16, 2026 (after Sprint 3)
+> Last updated: March 16, 2026 (after Sprint 3 — final)
 
 ## Phase 1 — TECHDOC ✅
 - [x] Agent store repo structure (SKILL.md + agent.yaml)
@@ -51,12 +51,14 @@
 - [x] executableSteps filter (I/O nodes excluded from API calls)
 - [x] SSE buffer flush (pipeline_done no longer lost)
 - [x] Upstash rate limiting (per-user, 10 req/min)
+- [x] Properties panel (right slide-over, model tier selector, custom instructions, I/O config)
+- [x] Config → API wiring (config.model overrides agent default, instructions prepend SKILL.md)
+- [x] Production audit (debug logs removed, env vars, error handling, hydration fix)
 
 ## Phase 6 — DEPLOY (next)
 - [ ] Vercel deployment + runagent.art domain
-- [ ] Properties panel (right side, opens on node click, Blender-style)
-- [ ] Input node type selector (text / URL / PDF / image / webhook)
-- [ ] Output node format selector (text / JSON / markdown)
+- [ ] Input node type selector affects pipeline input processing
+- [ ] Output node format selector affects output rendering
 - [ ] Mission completion → user account creation flow
 - [ ] Per-tier rate limits
 

@@ -1,7 +1,7 @@
 # runagent.art — Backlog
 
 > Prioritized feature backlog. Items move to sprint plans when picked up.
-> Last updated: March 16, 2026 (after Sprint 3)
+> Last updated: March 16, 2026 (after Sprint 3 — final)
 
 ---
 
@@ -10,9 +10,9 @@
 | # | Feature | Description | Effort |
 |---|---------|-------------|--------|
 | 1 | Vercel deployment | Deploy to runagent.art, env vars, domain config | S |
-| 2 | Properties panel | Right-side panel on node click (Blender-style), shows node config | M |
-| 3 | Input node type selector | Text / URL / PDF / image / webhook — determines how data enters pipeline | M |
-| 4 | Script node | Deterministic node (no LLM), runs JS/TS transform on input | M |
+| 2 | Script node | Deterministic node (no LLM), runs JS/TS transform on input | M |
+| 3 | Input type → execution | inputType selector affects how pipeline processes input (URL fetch, PDF parse, etc.) | M |
+| 4 | Output format → rendering | outputFormat selector affects how result is displayed (JSON pretty-print, markdown render) | S |
 | 5 | Mission completion flow | Save progress → unlock next mission → prompt account creation | M |
 
 ---
@@ -79,6 +79,11 @@
 - ~~SSE buffer flush~~ → Sprint 3
 - ~~OutputPanel as primary output~~ → Sprint 3
 - ~~MissionComplete overlay~~ → removed (redundant)
+- ~~Properties panel~~ → Sprint 3 (model tier, custom instructions, I/O config)
+- ~~Config → API wiring~~ → Sprint 3 (config.model + instructions sent to API)
+- ~~Production audit~~ → Sprint 3 (debug logs, env vars, error handling, hydration)
+- ~~DnD hydration fix~~ → Sprint 3 (useId on DndContext)
+- ~~OutputPanel Save button~~ → Sprint 3
 
 ---
 
