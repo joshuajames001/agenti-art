@@ -1,5 +1,7 @@
 export type AgentStatus = 'idle' | 'running' | 'done' | 'failed'
 
+export type NodeType = 'input' | 'output' | 'agent' | 'script' | 'router' | 'department'
+
 export type Agent = {
   id: string
   name: string
@@ -9,8 +11,10 @@ export type Agent = {
 }
 
 export type PipelineNode = {
+  nodeType: NodeType
   id: string
-  agent: Agent
+  agent?: Agent
+  label?: string
   status: AgentStatus
   tokensUsed: number
   stepOrder: number

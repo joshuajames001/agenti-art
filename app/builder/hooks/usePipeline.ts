@@ -37,7 +37,7 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   )
 
-  const usedAgentIds = new Set(nodes.map(n => n.agent.id))
+  const usedAgentIds = new Set(nodes.map(n => n.agent?.id).filter((id): id is string => !!id))
 
   const addLog = useCallback((entry: Omit<LogEntry, 'id' | 'time'>) => {
     const log: LogEntry = { ...entry, id: Math.random().toString(36), time: now() }
@@ -50,6 +50,7 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
   function addAgent(agent: Agent) {
     if (usedAgentIds.has(agent.id)) return
     const node: PipelineNode = {
+      nodeType: 'agent',
       id: Math.random().toString(36),
       agent,
       status: 'idle',
@@ -177,9 +178,9 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          steps: nodes.map(n => ({
-            agentName: n.agent.name,
-            model: n.agent.model,
+          steps: nodes.filter(n => n.agent).map(n => ({
+            agentName: n.agent!.name,
+            model: n.agent!.model,
             stepOrder: n.stepOrder,
           })),
           userPrompt: userPrompt.trim(),
@@ -221,10 +222,10 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         body: JSON.stringify({
           name: missionTitle || 'My Pipeline',
           missionSlug,
-          steps: nodes.map(n => ({
-            agentName: n.agent.name,
+          steps: nodes.filter(n => n.agent).map(n => ({
+            agentName: n.agent!.name,
             stepOrder: n.stepOrder,
-            model: n.agent.model,
+            model: n.agent!.model,
             connectors: [],
           })),
         }),

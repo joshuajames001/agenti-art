@@ -95,11 +95,13 @@ function SortableNode({
           STEP {String(node.stepOrder).padStart(2, '0')}
         </div>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#e8e8f0' }}>
-          {node.agent.name}
+          {node.agent?.name ?? node.label ?? node.nodeType}
         </div>
-        <div style={{ fontSize: 9, color: MODEL_COLOR[node.agent.model] || '#55556a', marginTop: 2 }}>
-          {node.agent.model}
-        </div>
+        {node.agent && (
+          <div style={{ fontSize: 9, color: MODEL_COLOR[node.agent.model] || '#55556a', marginTop: 2 }}>
+            {node.agent.model}
+          </div>
+        )}
         {node.tokensUsed > 0 && (
           <div style={{ fontSize: 9, color: '#00e5c8', marginTop: 2 }}>
             {node.tokensUsed.toLocaleString()} tokens

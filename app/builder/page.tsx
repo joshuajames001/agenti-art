@@ -49,6 +49,7 @@ export default async function BuilderPage({
 
   // Load existing pipeline if ID provided
   let initialNodes: {
+    nodeType: 'agent'
     id: string
     agent: Agent
     status: 'idle'
@@ -78,6 +79,7 @@ export default async function BuilderPage({
           const agent = availableAgents.find(a => a.name === step.agent_name)
           if (!agent) return null
           return {
+            nodeType: 'agent' as const,
             id: Math.random().toString(36),
             agent,
             status: 'idle' as const,
@@ -95,6 +97,7 @@ export default async function BuilderPage({
     const agent = availableAgents.find(a => a.name === agentParam)
     if (agent) {
       initialNodes = [{
+        nodeType: 'agent' as const,
         id: Math.random().toString(36),
         agent,
         status: 'idle' as const,
