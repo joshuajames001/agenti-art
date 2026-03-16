@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       .from('missions')
       .select('id')
       .eq('slug', missionSlug)
-      .single()
+      .single() as { data: { id: string } | null }
     missionId = mission?.id || null
   }
 
@@ -36,9 +36,9 @@ export async function POST(req: Request) {
       name,
       status: 'active',
       config: {},
-    })
+    } as any)
     .select()
-    .single()
+    .single() as { data: { id: string } | null; error: any }
 
   if (pipelineError || !pipeline) {
     return NextResponse.json({ error: pipelineError?.message || 'Failed to create pipeline' }, { status: 500 })
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
   const { error: stepsError } = await supabase
     .from('pipeline_steps')
-    .insert(stepsToInsert)
+    .insert(stepsToInsert as any)
 
   if (stepsError) {
     // Rollback pipeline
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
   // If mission completed — increment missions_completed on profile
   if (missionId) {
     try {
-      await supabase.rpc('increment_missions_completed', { user_id: user.id })
+      await supabase.rpc('increment_missions_completed' as any, { user_id: user.id } as any)
     } catch {
       /* non-critical */
     }

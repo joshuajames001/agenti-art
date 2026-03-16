@@ -23,13 +23,13 @@ export default async function MissionsPage() {
     const { data: missions } = await supabase
         .from('missions')
         .select('*')
-        .order('order_index', { ascending: true })
+        .order('order_index', { ascending: true }) as { data: Mission[] | null }
 
     const { data: completedMissions } = user ? await supabase
         .from('pipelines')
         .select('mission_id')
         .eq('user_id', user.id)
-        .eq('status', 'active') : { data: [] }
+        .eq('status', 'active') as { data: { mission_id: string }[] | null } : { data: [] as { mission_id: string }[] }
 
     const completedIds = new Set(completedMissions?.map(p => p.mission_id) || [])
 

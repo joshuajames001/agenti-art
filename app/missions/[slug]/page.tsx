@@ -14,7 +14,7 @@ export default async function MissionDetailPage({ params }: Props) {
     .from('missions')
     .select('*')
     .eq('slug', slug)
-    .single()
+    .single() as { data: { id: string; slug: string; title_en: string; description_en: string; difficulty: number; is_free: boolean; required_agents: string[]; order_index: number } | null }
 
   if (!mission) notFound()
 

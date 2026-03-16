@@ -28,7 +28,7 @@ export default async function BuilderPage({
       .from('missions')
       .select('title_en, required_agents')
       .eq('slug', missionSlug)
-      .single()
+      .single() as { data: { title_en: string; required_agents: string[] } | null }
     missionTitle = mission?.title_en
   }
 
@@ -63,7 +63,7 @@ export default async function BuilderPage({
       .from('pipelines')
       .select('*, pipeline_steps(*)')
       .eq('id', pipelineId)
-      .single()
+      .single() as { data: { name: string; pipeline_steps: { agent_name: string; step_order: number }[] } | null }
 
     if (pipeline) {
       if (!missionTitle && pipeline.name) {

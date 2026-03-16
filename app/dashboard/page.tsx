@@ -12,13 +12,13 @@ export default async function DashboardPage() {
     .from('profiles')
     .select('*')
     .eq('id', user.id)
-    .single()
+    .single() as { data: { email: string; plan: string; missions_completed: number } | null }
 
   const { data: pipelines } = await supabase
     .from('pipelines')
     .select('id, name, status, created_at, mission_id')
     .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: false }) as { data: { id: string; name: string; status: string; created_at: string; mission_id: string | null }[] | null }
 
   return (
     <main style={{ position: 'relative', zIndex: 1, padding: 40 }}>
