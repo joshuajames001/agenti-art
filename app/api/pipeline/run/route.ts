@@ -17,6 +17,7 @@ interface RunStep {
   stepOrder: number
   nodeType?: string
   label?: string
+  nodeId?: string
 }
 
 interface RunRequest {
@@ -126,7 +127,7 @@ export async function POST(req: Request) {
 
       for (let i = 0; i < executableSteps.length; i++) {
         const step = executableSteps[i]
-        send({ type: 'step_start', step: i, agent: step.agentName })
+        send({ type: 'step_start', step: i, agent: step.agentName, nodeId: step.nodeId })
 
         const stepStartedAt = new Date().toISOString()
 
@@ -160,6 +161,7 @@ export async function POST(req: Request) {
             agent: step.agentName,
             tokens: stepTokens,
             output: fullText,
+            nodeId: step.nodeId,
           })
 
           // Write run_step to DB
@@ -183,7 +185,7 @@ export async function POST(req: Request) {
           previousOutput = fullText
         } catch (err) {
           const errorMsg = err instanceof Error ? err.message : 'Unknown error'
-          send({ type: 'step_error', step: i, agent: step.agentName, error: errorMsg })
+          send({ type: 'step_error', step: i, agent: step.agentName, error: errorMsg, nodeId: step.nodeId })
           failed = true
 
           if (runId && pipelineStepMap?.has(step.stepOrder)) {

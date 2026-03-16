@@ -106,8 +106,8 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
   function handleSSEEvent(event: SSEEvent) {
     switch (event.type) {
       case 'step_start':
-        setNodes(prev => prev.map((n, i) =>
-          i === event.step ? { ...n, status: 'running' } : n
+        setNodes(prev => prev.map(n =>
+          n.id === event.nodeId ? { ...n, status: 'running' } : n
         ))
         addLog({ type: 'running', agent: event.agent, message: `${event.agent} starting...` })
         break
@@ -117,8 +117,8 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         break
 
       case 'step_done':
-        setNodes(prev => prev.map((n, i) =>
-          i === event.step ? { ...n, status: 'done', tokensUsed: event.tokens } : n
+        setNodes(prev => prev.map(n =>
+          n.id === event.nodeId ? { ...n, status: 'done', tokensUsed: event.tokens } : n
         ))
         setTotalTokens(prev => prev + event.tokens)
         setFinalOutput(event.output)
@@ -141,8 +141,8 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         break
 
       case 'step_error':
-        setNodes(prev => prev.map((n, i) =>
-          i === event.step ? { ...n, status: 'failed' } : n
+        setNodes(prev => prev.map(n =>
+          n.id === event.nodeId ? { ...n, status: 'failed' } : n
         ))
         addLog({ type: 'error', agent: event.agent, message: `${event.agent} failed: ${event.error}` })
         setDone(true)
@@ -154,9 +154,10 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         setRunning(false)
         addLog({ type: 'success', message: `─── Pipeline complete · ${event.totalTokens.toLocaleString()} tokens ───` })
         addLog({ type: 'success', message: '🎯 Mission objective met! Save your pipeline to complete the mission.' })
+        console.log('pipeline_done: updating output nodes', lastOutputRef.current?.slice(0, 50))
         setNodes(prev => prev.map(n =>
           n.nodeType === 'output'
-            ? { ...n, status: 'done', label: lastOutputRef.current }
+            ? { ...n, status: 'done' }
             : n
         ))
         break
@@ -199,10 +200,13 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          steps: nodes.filter(n => n.agent).map(n => ({
-            agentName: n.agent!.name,
-            model: n.agent!.model,
+          steps: nodes.map(n => ({
+            agentName: n.agent?.name,
+            model: n.agent?.model ?? 'smart',
             stepOrder: n.stepOrder,
+            nodeType: n.nodeType,
+            label: n.label,
+            nodeId: n.id,
           })),
           userPrompt: userPrompt.trim(),
           pipelineId: null,

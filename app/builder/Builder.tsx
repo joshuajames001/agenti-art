@@ -95,7 +95,7 @@ function SortableNode({
           STEP {String(node.stepOrder).padStart(2, '0')}
         </div>
         <div style={{ fontSize: 11, fontWeight: 700, color: '#e8e8f0' }}>
-          {node.agent?.name ?? node.label ?? node.nodeType}
+          {node.agent?.name ?? (node.nodeType === 'input' ? 'Input' : node.nodeType === 'output' ? 'Output' : node.nodeType)}
         </div>
         {node.agent && (
           <div style={{ fontSize: 9, color: MODEL_COLOR[node.agent.model] || '#55556a', marginTop: 2 }}>
@@ -311,32 +311,6 @@ export default function Builder(props: BuilderProps) {
                       />
                     ))}
 
-                    {/* Output node */}
-                    {nodes.length > 0 && (
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{ position: 'relative', width: 40, height: 2 }}>
-                          <div style={{
-                            width: '100%', height: '100%',
-                            background: done && nodes.every(n => n.status === 'done') ? '#3B6D1180' : '#ffffff15'
-                          }}/>
-                          <div style={{
-                            position: 'absolute', right: -1, top: -3,
-                            borderLeft: `7px solid ${done && nodes.every(n => n.status === 'done') ? '#3B6D1180' : '#ffffff15'}`,
-                            borderTop: '4px solid transparent', borderBottom: '4px solid transparent'
-                          }}/>
-                        </div>
-                        <div style={{
-                          background: '#141418',
-                          border: `1px solid ${done && nodes.every(n => n.status === 'done') ? '#3B6D1140' : '#ffffff12'}`,
-                          borderRadius: 8, padding: '12px 16px', minWidth: 100,
-                        }}>
-                          <div style={{ fontSize: 9, color: '#55556a', marginBottom: 4 }}>OUTPUT</div>
-                          <div style={{ fontSize: 11, fontWeight: 700, color: done && nodes.every(n => n.status === 'done') ? '#3B6D11' : '#55556a' }}>
-                            {done && nodes.every(n => n.status === 'done') ? 'ready ✓' : 'waiting...'}
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </SortableContext>
               </DndContext>
