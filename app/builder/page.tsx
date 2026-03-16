@@ -13,9 +13,9 @@ type Agent = {
 export default async function BuilderPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mission?: string }>
+  searchParams: Promise<{ mission?: string; pipeline?: string }>
 }) {
-  const { mission: missionSlug } = await searchParams
+  const { mission: missionSlug, pipeline: pipelineId } = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -47,11 +47,55 @@ export default async function BuilderPage({
     { id: 'browser-agent',   name: 'browser-agent',   model: 'fast',     category: 'browser',       description: 'Web scraping and automation' },
   ]
 
+  // Load existing pipeline if ID provided
+  let initialNodes: {
+    id: string
+    agent: Agent
+    status: 'idle'
+    tokensUsed: 0
+    stepOrder: number
+    inputFromStep: string | null
+  }[] | undefined
+
+  if (pipelineId) {
+    const { data: pipeline } = await supabase
+      .from('pipelines')
+      .select('*, pipeline_steps(*)')
+      .eq('id', pipelineId)
+      .single()
+
+    if (pipeline) {
+      if (!missionTitle && pipeline.name) {
+        missionTitle = pipeline.name
+      }
+
+      const steps = (pipeline.pipeline_steps || []).sort(
+        (a: { step_order: number }, b: { step_order: number }) => a.step_order - b.step_order
+      )
+
+      initialNodes = steps
+        .map((step: { agent_name: string; step_order: number }, i: number) => {
+          const agent = availableAgents.find(a => a.name === step.agent_name)
+          if (!agent) return null
+          return {
+            id: Math.random().toString(36),
+            agent,
+            status: 'idle' as const,
+            tokensUsed: 0 as const,
+            stepOrder: step.step_order,
+            inputFromStep: i > 0 ? 'prev' : null,
+          }
+        })
+        .filter(Boolean) as typeof initialNodes
+    }
+  }
+
   return (
     <Builder
       missionSlug={missionSlug}
       missionTitle={missionTitle}
       availableAgents={availableAgents}
+      initialNodes={initialNodes}
     />
   )
 }

@@ -1,4 +1,4 @@
-# agenti.art — Tech Stack
+# runagent.art — Tech Stack
 
 > Decision log: why each technology was chosen.
 > Last updated: March 2026
@@ -231,4 +231,4 @@ GOOGLE_API_KEY=
 
 ---
 
-*GhostFactory · agenti.art · Agents Rule Tomorrow*
+*GhostFactory · runagent.art · Agents Rule Tomorrow*

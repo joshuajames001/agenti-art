@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -12,6 +13,12 @@ export default async function DashboardPage() {
     .select('*')
     .eq('id', user.id)
     .single()
+
+  const { data: pipelines } = await supabase
+    .from('pipelines')
+    .select('id, name, status, created_at, mission_id')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
 
   return (
     <main style={{ position: 'relative', zIndex: 1, padding: 40 }}>
@@ -42,7 +49,7 @@ export default async function DashboardPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 40 }}>
         {[
           { label: 'MISSIONS COMPLETED', value: profile?.missions_completed || 0, color: 'var(--cyan)' },
-          { label: 'PIPELINES', value: 0, color: 'var(--text)' },
+          { label: 'PIPELINES', value: pipelines?.length || 0, color: 'var(--text)' },
           { label: 'RUNS', value: 0, color: 'var(--text)' },
         ].map(s => (
           <div key={s.label} style={{
@@ -57,6 +64,58 @@ export default async function DashboardPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Pipelines */}
+      <div style={{ marginBottom: 40 }}>
+        <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--text-3)', letterSpacing: '0.12em', marginBottom: 16 }}>
+          YOUR PIPELINES
+        </div>
+
+        {pipelines && pipelines.length > 0 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+            {pipelines.map((p) => {
+              const statusColor = p.status === 'active' ? 'var(--cyan)' : p.status === 'draft' ? 'var(--text-3)' : '#55556a'
+              const date = new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+              return (
+                <Link
+                  key={p.id}
+                  href={`/builder?pipeline=${p.id}`}
+                  style={{
+                    background: 'var(--bg-2)', border: '1px solid var(--border)',
+                    borderRadius: 8, padding: 20, textDecoration: 'none',
+                    transition: 'border 0.2s',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                    <div style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--text)', fontWeight: 700 }}>
+                      {p.name}
+                    </div>
+                    <div style={{
+                      fontFamily: 'var(--mono)', fontSize: 9, color: statusColor,
+                      border: `1px solid ${statusColor}40`,
+                      borderRadius: 4, padding: '2px 8px', textTransform: 'uppercase',
+                    }}>
+                      {p.status}
+                    </div>
+                  </div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--text-3)' }}>
+                    {date}
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        ) : (
+          <div style={{
+            textAlign: 'center', padding: '48px 40px',
+            border: '1px dashed var(--border)', borderRadius: 8,
+          }}>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--text-3)' }}>
+              No pipelines yet — <Link href="/missions" style={{ color: 'var(--cyan)', textDecoration: 'none' }}>start a mission</Link>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick actions */}

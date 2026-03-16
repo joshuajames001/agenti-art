@@ -58,7 +58,7 @@ export default function LoginPage() {
             </svg>
           </Link>
           <div style={{ fontFamily: 'var(--display)', fontSize: 28, color: 'var(--cyan)', letterSpacing: '0.04em' }}>
-            agenti.art
+            runagent.art
           </div>
           <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-3)', marginTop: 4 }}>
             AGENTS RULE TOMORROW

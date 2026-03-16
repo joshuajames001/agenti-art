@@ -1,6 +1,22 @@
+// Builder v2 - dnd-kit reorder
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useRef } from 'react'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  horizontalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 type AgentStatus = 'idle' | 'running' | 'done' | 'failed'
 
@@ -55,6 +71,126 @@ function now() {
   return `${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`
 }
 
+// ── Sortable node wrapper ──
+function SortableNode({
+  node,
+  index,
+  totalNodes,
+  running,
+  onRemove,
+}: {
+  node: PipelineNode
+  index: number
+  totalNodes: number
+  running: boolean
+  onRemove: (id: string) => void
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: node.id, disabled: running })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    display: 'flex' as const,
+    alignItems: 'center' as const,
+  }
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      {/* Node */}
+      <div
+        {...attributes}
+        {...listeners}
+        style={{
+          background: '#141418',
+          border: `1px solid ${STATUS_COLOR[node.status]}`,
+          borderRadius: 8, padding: '12px 16px',
+          minWidth: 120, position: 'relative',
+          transition: 'border 0.3s',
+          boxShadow: node.status === 'running' ? `0 0 12px ${STATUS_COLOR.running}20` : 'none',
+          cursor: running ? 'default' : 'grab',
+          touchAction: 'none',
+        }}
+      >
+        {/* Status dot */}
+        <div style={{
+          position: 'absolute', top: -4, right: -4,
+          width: 10, height: 10, borderRadius: '50%',
+          background: STATUS_COLOR[node.status],
+          border: '2px solid #0a0a0c',
+          animation: node.status === 'running' ? 'pulse-dot 0.8s ease-in-out infinite' : 'none'
+        }}/>
+
+        {/* Remove button */}
+        {!running && (
+          <button
+            onPointerDown={e => e.stopPropagation()}
+            onClick={() => onRemove(node.id)}
+            style={{
+              position: 'absolute', top: -4, left: -4,
+              width: 16, height: 16, borderRadius: '50%',
+              background: '#ff4d6d', border: '2px solid #0a0a0c',
+              color: '#fff', fontSize: 9, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              lineHeight: 1, padding: 0
+            }}
+          >×</button>
+        )}
+
+        <div style={{ fontSize: 9, color: '#55556a', marginBottom: 4 }}>
+          STEP {String(node.stepOrder).padStart(2, '0')}
+        </div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: '#e8e8f0' }}>
+          {node.agent.name}
+        </div>
+        <div style={{ fontSize: 9, color: MODEL_COLOR[node.agent.model] || '#55556a', marginTop: 2 }}>
+          {node.agent.model}
+        </div>
+        {node.tokensUsed > 0 && (
+          <div style={{ fontSize: 9, color: '#00e5c8', marginTop: 2 }}>
+            {node.tokensUsed.toLocaleString()} tokens
+          </div>
+        )}
+      </div>
+
+      {/* Connector */}
+      {index < totalNodes - 1 && (
+        <div style={{ position: 'relative', width: 40, height: 2 }}>
+          <div style={{
+            width: '100%', height: '100%',
+            background: node.status === 'done' ? '#3B6D1180' :
+                        node.status === 'running' ? '#00e5c8' : '#ffffff15',
+            transition: 'background 0.3s'
+          }}/>
+          <div style={{
+            position: 'absolute', right: -1, top: -3,
+            borderLeft: `7px solid ${node.status === 'done' ? '#3B6D1180' : node.status === 'running' ? '#00e5c8' : '#ffffff15'}`,
+            borderTop: '4px solid transparent',
+            borderBottom: '4px solid transparent',
+            transition: 'border-left-color 0.3s'
+          }}/>
+          {node.status === 'running' && (
+            <div style={{
+              position: 'absolute', top: -3,
+              width: 6, height: 6, borderRadius: '50%',
+              background: '#00e5c8',
+              animation: 'flow-dot 1.2s linear infinite'
+            }}/>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Main Builder ──
 export default function Builder({ missionSlug, missionTitle, availableAgents, initialNodes = [] }: Props) {
   const [nodes, setNodes] = useState<PipelineNode[]>(initialNodes)
   const [logs, setLogs] = useState<LogEntry[]>([
@@ -62,10 +198,15 @@ export default function Builder({ missionSlug, missionTitle, availableAgents, in
   ])
   const [running, setRunning] = useState(false)
   const [done, setDone] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [totalTokens, setTotalTokens] = useState(0)
   const [dragOver, setDragOver] = useState(false)
   const logRef = useRef<HTMLDivElement>(null)
   const runInterval = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  )
 
   const usedAgentIds = new Set(nodes.map(n => n.agent.id))
 
@@ -89,6 +230,21 @@ export default function Builder({ missionSlug, missionTitle, availableAgents, in
     }
     setNodes(prev => [...prev, node])
     addLog({ type: 'info', agent: agent.name, message: `${agent.name} added to pipeline (step ${node.stepOrder})` })
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+    setNodes(prev => {
+      const oldIndex = prev.findIndex(n => n.id === active.id)
+      const newIndex = prev.findIndex(n => n.id === over.id)
+      const reordered = arrayMove(prev, oldIndex, newIndex)
+      return reordered.map((n, i) => ({
+        ...n,
+        stepOrder: i + 1,
+        inputFromStep: i > 0 ? reordered[i - 1].id : null,
+      }))
+    })
   }
 
   function removeNode(nodeId: string) {
@@ -171,6 +327,33 @@ export default function Builder({ missionSlug, missionTitle, availableAgents, in
     }
   }
 
+  async function savePipeline() {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/pipelines/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: missionTitle || 'My Pipeline',
+          missionSlug,
+          steps: nodes.map(n => ({
+            agentName: n.agent.name,
+            stepOrder: n.stepOrder,
+            model: n.agent.model,
+            connectors: [],
+          })),
+        }),
+      })
+      if (!res.ok) throw new Error(`Save failed (${res.status})`)
+      addLog({ type: 'success', message: '✓ Pipeline saved!' })
+      addLog({ type: 'info', message: '→ View your pipelines at /dashboard' })
+    } catch (err) {
+      addLog({ type: 'error', message: `Save failed: ${err instanceof Error ? err.message : 'unknown error'}` })
+    } finally {
+      setSaving(false)
+    }
+  }
+
   function resetPipeline() {
     setNodes(prev => prev.map(n => ({ ...n, status: 'idle', tokensUsed: 0 })))
     setTotalTokens(0)
@@ -222,6 +405,22 @@ export default function Builder({ missionSlug, missionTitle, availableAgents, in
         </div>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {done && nodes.every(n => n.status === 'done') && (
+            <button
+              onClick={savePipeline}
+              disabled={saving}
+              style={{
+                background: saving ? '#ffffff10' : '#3B6D11',
+                border: 'none', color: '#e8e8f0',
+                fontFamily: "'Space Mono', monospace",
+                fontSize: 11, fontWeight: 700, padding: '7px 20px',
+                borderRadius: 4, cursor: saving ? 'not-allowed' : 'pointer',
+                letterSpacing: '0.08em', transition: 'background 0.2s',
+              }}
+            >
+              {saving ? 'SAVING...' : '💾 SAVE PIPELINE'}
+            </button>
+          )}
           {done && (
             <button onClick={resetPipeline} style={{
               background: 'transparent', border: '1px solid #ffffff20',
@@ -266,6 +465,8 @@ export default function Builder({ missionSlug, missionTitle, availableAgents, in
             return (
               <div
                 key={agent.id}
+                draggable={!inUse && !running}
+                onDragStart={(e) => e.dataTransfer.setData('agentId', agent.id)}
                 onClick={() => !inUse && !running && addAgent(agent)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8,
@@ -344,120 +545,60 @@ export default function Builder({ missionSlug, missionTitle, availableAgents, in
                 <div style={{ fontSize: 11, color: '#ffffff20' }}>click agents to add them to the pipeline</div>
               </div>
             ) : (
-              <div style={{
-                position: 'absolute', inset: 0,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                padding: '20px 32px', gap: 0, overflowX: 'auto'
-              }}>
-                {nodes.map((node, i) => (
-                  <div key={node.id} style={{ display: 'flex', alignItems: 'center' }}>
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={nodes.map(n => n.id)}
+                  strategy={horizontalListSortingStrategy}
+                >
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    padding: '20px 32px', gap: 0, overflowX: 'auto'
+                  }}>
+                    {nodes.map((node, i) => (
+                      <SortableNode
+                        key={node.id}
+                        node={node}
+                        index={i}
+                        totalNodes={nodes.length}
+                        running={running}
+                        onRemove={removeNode}
+                      />
+                    ))}
 
-                    {/* Node */}
-                    <div style={{
-                      background: '#141418',
-                      border: `1px solid ${STATUS_COLOR[node.status]}${node.status === 'idle' ? '' : ''}`,
-                      borderRadius: 8, padding: '12px 16px',
-                      minWidth: 120, position: 'relative',
-                      transition: 'border 0.3s',
-                      boxShadow: node.status === 'running' ? `0 0 12px ${STATUS_COLOR.running}20` : 'none',
-                    }}>
-                      {/* Status dot */}
-                      <div style={{
-                        position: 'absolute', top: -4, right: -4,
-                        width: 10, height: 10, borderRadius: '50%',
-                        background: STATUS_COLOR[node.status],
-                        border: '2px solid #0a0a0c',
-                        animation: node.status === 'running' ? 'pulse-dot 0.8s ease-in-out infinite' : 'none'
-                      }}/>
-
-                      {/* Remove button */}
-                      {!running && (
-                        <button
-                          onClick={() => removeNode(node.id)}
-                          style={{
-                            position: 'absolute', top: -4, left: -4,
-                            width: 16, height: 16, borderRadius: '50%',
-                            background: '#ff4d6d', border: '2px solid #0a0a0c',
-                            color: '#fff', fontSize: 9, cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            lineHeight: 1, padding: 0
-                          }}
-                        >×</button>
-                      )}
-
-                      <div style={{ fontSize: 9, color: '#55556a', marginBottom: 4 }}>
-                        STEP {String(node.stepOrder).padStart(2, '0')}
-                      </div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: '#e8e8f0' }}>
-                        {node.agent.name}
-                      </div>
-                      <div style={{ fontSize: 9, color: MODEL_COLOR[node.agent.model] || '#55556a', marginTop: 2 }}>
-                        {node.agent.model}
-                      </div>
-                      {node.tokensUsed > 0 && (
-                        <div style={{ fontSize: 9, color: '#00e5c8', marginTop: 2 }}>
-                          {node.tokensUsed.toLocaleString()} tokens
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Connector */}
-                    {i < nodes.length - 1 && (
-                      <div style={{ position: 'relative', width: 40, height: 2 }}>
-                        <div style={{
-                          width: '100%', height: '100%',
-                          background: node.status === 'done' ? '#3B6D1180' :
-                                      node.status === 'running' ? '#00e5c8' : '#ffffff15',
-                          transition: 'background 0.3s'
-                        }}/>
-                        <div style={{
-                          position: 'absolute', right: -1, top: -3,
-                          borderLeft: `7px solid ${node.status === 'done' ? '#3B6D1180' : node.status === 'running' ? '#00e5c8' : '#ffffff15'}`,
-                          borderTop: '4px solid transparent',
-                          borderBottom: '4px solid transparent',
-                          transition: 'border-left-color 0.3s'
-                        }}/>
-                        {node.status === 'running' && (
+                    {/* Output node */}
+                    {nodes.length > 0 && (
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <div style={{ position: 'relative', width: 40, height: 2 }}>
                           <div style={{
-                            position: 'absolute', top: -3,
-                            width: 6, height: 6, borderRadius: '50%',
-                            background: '#00e5c8',
-                            animation: 'flow-dot 1.2s linear infinite'
+                            width: '100%', height: '100%',
+                            background: done && nodes.every(n => n.status === 'done') ? '#3B6D1180' : '#ffffff15'
                           }}/>
-                        )}
+                          <div style={{
+                            position: 'absolute', right: -1, top: -3,
+                            borderLeft: `7px solid ${done && nodes.every(n => n.status === 'done') ? '#3B6D1180' : '#ffffff15'}`,
+                            borderTop: '4px solid transparent', borderBottom: '4px solid transparent'
+                          }}/>
+                        </div>
+                        <div style={{
+                          background: '#141418',
+                          border: `1px solid ${done && nodes.every(n => n.status === 'done') ? '#3B6D1140' : '#ffffff12'}`,
+                          borderRadius: 8, padding: '12px 16px', minWidth: 100,
+                        }}>
+                          <div style={{ fontSize: 9, color: '#55556a', marginBottom: 4 }}>OUTPUT</div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: done && nodes.every(n => n.status === 'done') ? '#3B6D11' : '#55556a' }}>
+                            {done && nodes.every(n => n.status === 'done') ? 'ready ✓' : 'waiting...'}
+                          </div>
+                        </div>
                       </div>
                     )}
-
                   </div>
-                ))}
-
-                {/* Output node */}
-                {nodes.length > 0 && (
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ position: 'relative', width: 40, height: 2 }}>
-                      <div style={{
-                        width: '100%', height: '100%',
-                        background: done && nodes.every(n => n.status === 'done') ? '#3B6D1180' : '#ffffff15'
-                      }}/>
-                      <div style={{
-                        position: 'absolute', right: -1, top: -3,
-                        borderLeft: `7px solid ${done && nodes.every(n => n.status === 'done') ? '#3B6D1180' : '#ffffff15'}`,
-                        borderTop: '4px solid transparent', borderBottom: '4px solid transparent'
-                      }}/>
-                    </div>
-                    <div style={{
-                      background: '#141418',
-                      border: `1px solid ${done && nodes.every(n => n.status === 'done') ? '#3B6D1140' : '#ffffff12'}`,
-                      borderRadius: 8, padding: '12px 16px', minWidth: 100,
-                    }}>
-                      <div style={{ fontSize: 9, color: '#55556a', marginBottom: 4 }}>OUTPUT</div>
-                      <div style={{ fontSize: 11, fontWeight: 700, color: done && nodes.every(n => n.status === 'done') ? '#3B6D11' : '#55556a' }}>
-                        {done && nodes.every(n => n.status === 'done') ? 'ready ✓' : 'waiting...'}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+                </SortableContext>
+              </DndContext>
             )}
           </div>
 
@@ -510,7 +651,7 @@ export default function Builder({ missionSlug, missionTitle, availableAgents, in
         <span>steps: <span style={{ color: '#00e5c8' }}>{nodes.length}</span></span>
         <span>tokens: <span style={{ color: '#00e5c8' }}>{totalTokens.toLocaleString()}</span></span>
         <span>adrs: <span style={{ color: '#00e5c8' }}>3 active</span></span>
-        <span style={{ marginLeft: 'auto' }}>agenti.art · v0.1.0-alpha</span>
+        <span style={{ marginLeft: 'auto' }}>runagent.art · v0.1.0-alpha</span>
       </div>
 
       <style>{`

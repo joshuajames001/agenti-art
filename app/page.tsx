@@ -20,7 +20,7 @@ export default function HomePage() {
             <circle cx="28" cy="16" r="2" fill="#00e5c8" opacity="0.6"/>
           </svg>
           <span style={{ fontFamily: 'var(--mono)', fontSize: 14, color: 'var(--cyan)', fontWeight: 700 }}>
-            agenti.art
+            runagent.art
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
@@ -129,7 +129,7 @@ export default function HomePage() {
         display: 'flex', justifyContent: 'space-between', alignItems: 'center'
       }}>
         <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-3)' }}>
-          GhostFactory · agenti.art
+          GhostFactory · runagent.art
         </span>
         <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text-3)' }}>
           v0.1.0-alpha

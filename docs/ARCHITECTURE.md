@@ -1,11 +1,11 @@
 # agents.art — System Architecture
 
 > Version 1.0 · March 2026 · GhostFactory
-> Domain: agenti.art (pending) · Repo: joshuajames001/agenti-art
+> Domain: runagent.art (pending) · Repo: joshuajames001/agenti-art
 
 ## Overview
 
-agenti.art is an AI agent platform presented as a strategy game. Users complete missions by building and running multi-agent pipelines. The game UI is the onboarding — completing a mission produces a real, working system.
+runagent.art is an AI agent platform presented as a strategy game. Users complete missions by building and running multi-agent pipelines. The game UI is the onboarding — completing a mission produces a real, working system.
 
 ```
 Player → Game UI → API layer → Orchestrator → Agent pool → LiteLLM → Connectors → Data
@@ -95,7 +95,7 @@ Agent structure:
 ```
 agents/{name}/
   SKILL.md          ← instructions + frontmatter (Anthropic standard)
-  agent.yaml        ← runtime config (agenti.art extension)
+  agent.yaml        ← runtime config (runagent.art extension)
   references/       ← optional — loaded on demand (progressive disclosure)
 ```
 
@@ -220,8 +220,8 @@ ADRs are binding rules — not documentation. Violations stop the pipeline.
 | `.cursorrules` | Cursor | Cursor-specific rules |
 | `model_config.yaml` | All agents | LiteLLM aliases, GhostFactory shared |
 | `schema.yaml` | CI pipeline | Validates agent.yaml on every PR |
-| `registry.json` | agenti.art frontend | Auto-generated agent index |
+| `registry.json` | runagent.art frontend | Auto-generated agent index |
 
 ---
 
-*GhostFactory · agenti.art · Agents Rule Tomorrow*
+*GhostFactory · runagent.art · Agents Rule Tomorrow*

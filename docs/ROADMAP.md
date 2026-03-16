@@ -1,4 +1,4 @@
-# agenti.art — Roadmap
+# runagent.art — Roadmap
 
 > Living document — updated as priorities shift.
 > Last updated: March 2026
@@ -38,8 +38,8 @@
 - [ ] Live MCP connector integrations
 - [ ] Real pipeline execution
 - [ ] Billing (free missions → paid runtime)
-- [ ] agenti.art domain live
+- [ ] runagent.art domain live
 
 ---
 
-*GhostFactory · agenti.art · Agents Rule Tomorrow*
+*GhostFactory · runagent.art · Agents Rule Tomorrow*

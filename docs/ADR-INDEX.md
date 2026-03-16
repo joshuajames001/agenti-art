@@ -1,6 +1,6 @@
-# agenti.art — ADR Index
+# runagent.art — ADR Index
 
-> Architecture Decision Records — binding rules for the agenti.art system.
+> Architecture Decision Records — binding rules for the runagent.art system.
 > Maintained by: adr-creator agent + human operators.
 > Read by: orchestrator (before every run) · auditor (enforcement) · adr-creator (deduplication)
 
@@ -331,7 +331,7 @@ Agents MUST NOT hardcode model strings in agent.yaml or SKILL.md.
 
 ---
 
-*GhostFactory · agenti.art · Agents Rule Tomorrow*
+*GhostFactory · runagent.art · Agents Rule Tomorrow*
 
 ---
 

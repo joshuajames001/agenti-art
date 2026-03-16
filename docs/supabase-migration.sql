@@ -1,5 +1,5 @@
 -- ============================================================
--- agenti.art — Supabase Database Migration
+-- runagent.art — Supabase Database Migration
 -- Version: 1.0.0 | March 2026 | GhostFactory
 -- ============================================================
 -- Run in Supabase SQL Editor or via supabase db push

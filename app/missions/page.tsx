@@ -54,7 +54,7 @@ export default async function MissionsPage() {
                         <circle cx="28" cy="16" r="2" fill="#00e5c8" opacity="0.6" />
                     </svg>
                     <span style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--cyan)', fontWeight: 700 }}>
-                        agenti.art
+                        runagent.art
                     </span>
                 </Link>
                 <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
