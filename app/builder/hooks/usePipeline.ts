@@ -32,6 +32,7 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
   const [finalTokens, setFinalTokens] = useState(0)
   const logRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const lastOutputRef = useRef('')
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -123,6 +124,7 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         setFinalOutput(event.output)
         setFinalAgent(event.agent)
         setFinalTokens(event.tokens)
+        lastOutputRef.current = event.output
         addLog({
           type: 'success',
           agent: event.agent,
@@ -152,6 +154,11 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         setRunning(false)
         addLog({ type: 'success', message: `─── Pipeline complete · ${event.totalTokens.toLocaleString()} tokens ───` })
         addLog({ type: 'success', message: '🎯 Mission objective met! Save your pipeline to complete the mission.' })
+        setNodes(prev => prev.map(n =>
+          n.nodeType === 'output'
+            ? { ...n, status: 'done', label: lastOutputRef.current }
+            : n
+        ))
         break
 
       case 'pipeline_error':

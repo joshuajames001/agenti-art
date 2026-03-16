@@ -12,15 +12,18 @@ const MODEL_MAP: Record<string, string> = {
 const SKILL_BASE = 'https://raw.githubusercontent.com/joshuajames001/agenti-art/main/agents'
 
 interface RunStep {
-  agentName: string
+  agentName?: string
   model: string
   stepOrder: number
+  nodeType?: string
+  label?: string
 }
 
 interface RunRequest {
   steps: RunStep[]
   userPrompt: string
   pipelineId: string | null
+  inputNodeValue?: string
 }
 
 async function fetchSkillMd(agentName: string): Promise<string> {
@@ -60,12 +63,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { steps, userPrompt, pipelineId } = body
+  const { steps, userPrompt, pipelineId, inputNodeValue } = body
+  const executableSteps = steps.filter(s => s.nodeType !== 'input' && s.nodeType !== 'output')
 
-  if (!steps || steps.length === 0) {
+  if (!executableSteps || executableSteps.length === 0) {
     return NextResponse.json({ error: 'No steps provided' }, { status: 400 })
   }
-  if (steps.length > 8) {
+  if (executableSteps.length > 8) {
     return NextResponse.json({ error: 'ADR-005: max 8 agents per pipeline' }, { status: 400 })
   }
   if (!userPrompt?.trim()) {
@@ -82,7 +86,7 @@ export async function POST(req: Request) {
       }
 
       let totalTokens = 0
-      let previousOutput = userPrompt.trim()
+      let previousOutput = (inputNodeValue ?? userPrompt).trim()
       let runId: string | null = null
       let pipelineStepMap: Map<number, string> | null = null
       let failed = false
@@ -120,13 +124,14 @@ export async function POST(req: Request) {
         }
       }
 
-      for (let i = 0; i < steps.length; i++) {
-        const step = steps[i]
+      for (let i = 0; i < executableSteps.length; i++) {
+        const step = executableSteps[i]
         send({ type: 'step_start', step: i, agent: step.agentName })
 
         const stepStartedAt = new Date().toISOString()
 
         try {
+          if (!step.agentName) throw new Error(`Step ${i} has no agent`)
           const systemPrompt = await fetchSkillMd(step.agentName)
 
           const modelId = MODEL_MAP[step.model]
