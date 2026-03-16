@@ -49,7 +49,7 @@ export default async function StorePage({
     let agents: RegistryAgent[] = []
     try {
         const res = await fetch(
-            'https://raw.githubusercontent.com/joshuajames001/agenti-art/main/registry.json',
+            process.env.GITHUB_REGISTRY_URL ?? 'https://raw.githubusercontent.com/joshuajames001/agenti-art/main/registry.json',
             { next: { revalidate: 300 } }
         )
         if (res.ok) {

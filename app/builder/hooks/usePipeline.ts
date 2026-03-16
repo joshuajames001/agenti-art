@@ -8,7 +8,7 @@ import {
   type DragEndEvent,
 } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
-import type { Agent, PipelineNode, LogEntry, BuilderProps } from '../types'
+import type { Agent, PipelineNode, NodeConfig, LogEntry, BuilderProps } from '../types'
 import { processSSEStream, type SSEEvent } from './useSSE'
 
 function now() {
@@ -30,6 +30,7 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
   const [finalOutput, setFinalOutput] = useState<string | null>(null)
   const [finalAgent, setFinalAgent] = useState<string | null>(null)
   const [finalTokens, setFinalTokens] = useState(0)
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
   const logRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
   const lastOutputRef = useRef('')
@@ -154,7 +155,6 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         setRunning(false)
         addLog({ type: 'success', message: `─── Pipeline complete · ${event.totalTokens.toLocaleString()} tokens ───` })
         addLog({ type: 'success', message: '🎯 Mission objective met! Save your pipeline to complete the mission.' })
-        console.log('pipeline_done: updating output nodes', lastOutputRef.current?.slice(0, 50))
         setNodes(prev => prev.map(n =>
           n.nodeType === 'output'
             ? { ...n, status: 'done' }
@@ -202,11 +202,12 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
         body: JSON.stringify({
           steps: nodes.map(n => ({
             agentName: n.agent?.name,
-            model: n.agent?.model ?? 'smart',
+            model: n.config?.model ?? n.agent?.model ?? 'smart',
             stepOrder: n.stepOrder,
             nodeType: n.nodeType,
             label: n.label,
             nodeId: n.id,
+            instructions: n.config?.instructions ?? '',
           })),
           userPrompt: userPrompt.trim(),
           pipelineId: null,
@@ -265,6 +266,14 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
     }
   }
 
+  function updateNodeConfig(nodeId: string, config: Partial<NodeConfig>) {
+    setNodes(prev => prev.map(n =>
+      n.id === nodeId
+        ? { ...n, config: { ...n.config, ...config } }
+        : n
+    ))
+  }
+
   function resetPipeline() {
     setNodes(prev => prev.map(n => ({ ...n, status: 'idle', tokensUsed: 0 })))
     setTotalTokens(0)
@@ -286,6 +295,7 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
     logRef,
     sensors,
     usedAgentIds,
+    selectedNodeId, setSelectedNodeId, updateNodeConfig,
     addLog, addAgent, addIONode, handleDragEnd, removeNode,
     runPipeline, stopPipeline, savePipeline, resetPipeline,
   }

@@ -1,7 +1,7 @@
 // Builder v3 - feature-slice architecture
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useId } from 'react'
 import {
   DndContext,
   closestCenter,
@@ -19,6 +19,7 @@ import { usePipeline } from './hooks/usePipeline'
 import { AgentPool } from './components/AgentPool'
 import { LogPanel } from './components/LogPanel'
 import { OutputPanel } from './components/OutputPanel'
+import { PropertiesPanel } from './components/PropertiesPanel'
 import { PromptInput } from './components/PromptInput'
 
 // ── Sortable node wrapper ──
@@ -27,13 +28,17 @@ function SortableNode({
   index,
   totalNodes,
   running,
+  selected,
   onRemove,
+  onSelect,
 }: {
   node: PipelineNode
   index: number
   totalNodes: number
   running: boolean
+  selected: boolean
   onRemove: (id: string) => void
+  onSelect: (id: string) => void
 }) {
   const {
     attributes,
@@ -57,13 +62,14 @@ function SortableNode({
       <div
         {...attributes}
         {...listeners}
+        onClick={() => onSelect(node.id)}
         style={{
-          background: '#141418',
-          border: `1px solid ${STATUS_COLOR[node.status]}`,
+          background: selected ? '#1a1a22' : '#141418',
+          border: `1px solid ${selected ? '#00e5c8' : STATUS_COLOR[node.status]}`,
           borderRadius: 8, padding: '12px 16px',
           minWidth: 120, position: 'relative',
-          transition: 'border 0.3s',
-          boxShadow: node.status === 'running' ? `0 0 12px ${STATUS_COLOR.running}20` : 'none',
+          transition: 'border 0.3s, background 0.2s',
+          boxShadow: selected ? '0 0 12px #00e5c815' : node.status === 'running' ? `0 0 12px ${STATUS_COLOR.running}20` : 'none',
           cursor: running ? 'default' : 'grab',
           touchAction: 'none',
         }}
@@ -98,8 +104,8 @@ function SortableNode({
           {node.agent?.name ?? (node.nodeType === 'input' ? 'Input' : node.nodeType === 'output' ? 'Output' : node.nodeType)}
         </div>
         {node.agent && (
-          <div style={{ fontSize: 9, color: MODEL_COLOR[node.agent.model] || '#55556a', marginTop: 2 }}>
-            {node.agent.model}
+          <div style={{ fontSize: 9, color: MODEL_COLOR[node.config?.model ?? node.agent.model] || '#55556a', marginTop: 2 }}>
+            {node.config?.model ?? node.agent.model}
           </div>
         )}
         {node.tokensUsed > 0 && (
@@ -144,11 +150,13 @@ export default function Builder(props: BuilderProps) {
     nodes, logs, running, done, saving, totalTokens,
     dragOver, setDragOver, userPrompt, setUserPrompt,
     finalOutput, finalAgent, finalTokens,
+    selectedNodeId, setSelectedNodeId, updateNodeConfig,
     logRef, sensors, usedAgentIds,
     addAgent, addIONode, handleDragEnd, removeNode,
     runPipeline, stopPipeline, savePipeline, resetPipeline,
   } = usePipeline(props)
 
+  const dndId = useId()
   const { missionSlug, missionTitle, availableAgents } = props
 
   const [showOutput, setShowOutput] = useState(false)
@@ -287,6 +295,7 @@ export default function Builder(props: BuilderProps) {
               </div>
             ) : (
               <DndContext
+                id={dndId}
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={handleDragEnd}
@@ -307,7 +316,9 @@ export default function Builder(props: BuilderProps) {
                         index={i}
                         totalNodes={nodes.length}
                         running={running}
+                        selected={selectedNodeId === node.id}
                         onRemove={removeNode}
+                        onSelect={setSelectedNodeId}
                       />
                     ))}
 
@@ -342,6 +353,15 @@ export default function Builder(props: BuilderProps) {
         tokens={finalTokens}
         visible={showOutput}
         onClose={() => setShowOutput(false)}
+        onSave={savePipeline}
+        saving={saving}
+      />
+
+      <PropertiesPanel
+        node={nodes.find(n => n.id === selectedNodeId) ?? null}
+        visible={selectedNodeId !== null && !showOutput}
+        onClose={() => setSelectedNodeId(null)}
+        onUpdate={updateNodeConfig}
       />
 
       <style>{`

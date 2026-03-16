@@ -8,12 +8,16 @@ export function OutputPanel({
   tokens,
   visible,
   onClose,
+  onSave,
+  saving,
 }: {
   output: string | null
   agentName: string | null
   tokens: number
   visible: boolean
   onClose: () => void
+  onSave?: () => void
+  saving?: boolean
 }) {
   const [copied, setCopied] = useState(false)
 
@@ -118,27 +122,46 @@ export function OutputPanel({
           </pre>
         </div>
 
-        {/* Copy button */}
+        {/* Action buttons */}
         <div style={{
           padding: '16px 24px',
           borderTop: '1px solid #ffffff12',
           flexShrink: 0,
+          display: 'flex', gap: 8,
         }}>
           <button
             onClick={handleCopy}
             style={{
-              width: '100%',
-              fontFamily: "'Space Mono', monospace", fontSize: 12, fontWeight: 700,
+              flex: 1,
+              fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700,
               color: copied ? '#e8e8f0' : 'var(--bg)',
               background: copied ? '#3B6D11' : 'var(--cyan)',
               border: 'none', borderRadius: 6,
-              padding: '12px', cursor: 'pointer',
+              padding: '10px', cursor: 'pointer',
               letterSpacing: '0.06em',
               transition: 'all 0.2s',
             }}
           >
-            {copied ? '✓ COPIED' : 'COPY OUTPUT'}
+            {copied ? '✓ COPIED' : 'COPY'}
           </button>
+          {onSave && (
+            <button
+              onClick={onSave}
+              disabled={saving}
+              style={{
+                flex: 1,
+                fontFamily: "'Space Mono', monospace", fontSize: 11, fontWeight: 700,
+                color: saving ? '#55556a' : '#e8e8f0',
+                background: saving ? '#ffffff10' : '#3B6D11',
+                border: 'none', borderRadius: 6,
+                padding: '10px', cursor: saving ? 'not-allowed' : 'pointer',
+                letterSpacing: '0.06em',
+                transition: 'all 0.2s',
+              }}
+            >
+              {saving ? 'SAVING...' : 'SAVE PIPELINE'}
+            </button>
+          )}
         </div>
       </div>
     </>

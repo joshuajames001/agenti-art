@@ -10,11 +10,19 @@ export type Agent = {
   description: string
 }
 
+export type NodeConfig = {
+  model?: string
+  instructions?: string
+  inputType?: 'text' | 'url' | 'pdf' | 'image' | 'webhook'
+  outputFormat?: 'text' | 'json' | 'markdown'
+}
+
 export type PipelineNode = {
   nodeType: NodeType
   id: string
   agent?: Agent
   label?: string
+  config?: NodeConfig
   status: AgentStatus
   tokensUsed: number
   stepOrder: number

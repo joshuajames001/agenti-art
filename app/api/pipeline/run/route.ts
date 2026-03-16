@@ -9,7 +9,8 @@ const MODEL_MAP: Record<string, string> = {
   powerful: 'claude-opus-4-6',
 }
 
-const SKILL_BASE = 'https://raw.githubusercontent.com/joshuajames001/agenti-art/main/agents'
+const SKILL_BASE = process.env.GITHUB_AGENTS_BASE_URL
+  ?? 'https://raw.githubusercontent.com/joshuajames001/agenti-art/main/agents'
 
 interface RunStep {
   agentName?: string
@@ -18,6 +19,7 @@ interface RunStep {
   nodeType?: string
   label?: string
   nodeId?: string
+  instructions?: string
 }
 
 interface RunRequest {
@@ -133,7 +135,10 @@ export async function POST(req: Request) {
 
         try {
           if (!step.agentName) throw new Error(`Step ${i} has no agent`)
-          const systemPrompt = await fetchSkillMd(step.agentName)
+          const skillMd = await fetchSkillMd(step.agentName)
+          const systemPrompt = step.instructions
+            ? `${step.instructions}\n\n---\n\n${skillMd}`
+            : skillMd
 
           const modelId = MODEL_MAP[step.model]
           if (!modelId) throw new Error(`Unknown model alias: ${step.model}`)
