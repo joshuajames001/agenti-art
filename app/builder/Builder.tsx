@@ -145,7 +145,7 @@ export default function Builder(props: BuilderProps) {
     dragOver, setDragOver, userPrompt, setUserPrompt,
     finalOutput, finalAgent, finalTokens,
     logRef, sensors, usedAgentIds,
-    addAgent, handleDragEnd, removeNode,
+    addAgent, addIONode, handleDragEnd, removeNode,
     runPipeline, stopPipeline, savePipeline, resetPipeline,
   } = usePipeline(props)
 
@@ -243,6 +243,7 @@ export default function Builder(props: BuilderProps) {
           running={running}
           nodeCount={nodes.length}
           addAgent={addAgent}
+          addIONode={addIONode}
         />
 
         {/* ── CANVAS ── */}

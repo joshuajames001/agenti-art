@@ -1,4 +1,4 @@
-import type { Agent } from '../types'
+import type { Agent, NodeType } from '../types'
 import { MODEL_COLOR } from '../types'
 
 export function AgentPool({
@@ -7,12 +7,14 @@ export function AgentPool({
   running,
   nodeCount,
   addAgent,
+  addIONode,
 }: {
   availableAgents: Agent[]
   usedAgentIds: Set<string>
   running: boolean
   nodeCount: number
   addAgent: (agent: Agent) => void
+  addIONode: (nodeType: 'input' | 'output', label: string) => void
 }) {
   return (
     <div style={{
@@ -20,8 +22,43 @@ export function AgentPool({
       padding: 12, overflowY: 'auto',
       background: '#0a0a0c'
     }}>
+      {/* I/O section */}
       <div style={{ fontSize: 9, color: '#55556a', letterSpacing: '0.12em', marginBottom: 10, paddingBottom: 6, borderBottom: '1px solid #ffffff10' }}>
-        AGENT POOL
+        I / O
+      </div>
+
+      {[
+        { type: 'input' as const, label: 'Input', subtitle: 'pipeline entry', dot: '#00e5c8' },
+        { type: 'output' as const, label: 'Output', subtitle: 'pipeline exit', dot: '#ffd166' },
+      ].map(io => (
+        <div
+          key={io.type}
+          onClick={() => !running && addIONode(io.type, io.label)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '8px 10px', border: '1px solid #ffffff12',
+            borderRadius: 6, marginBottom: 6,
+            cursor: running ? 'not-allowed' : 'pointer',
+            opacity: running ? 0.35 : 1,
+            transition: 'border 0.2s, background 0.2s',
+            background: 'transparent',
+          }}
+          onMouseEnter={e => { if (!running) (e.currentTarget as HTMLDivElement).style.background = '#00e5c808' }}
+          onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
+        >
+          <div style={{ width: 7, height: 7, borderRadius: '50%', background: io.dot, flexShrink: 0 }}/>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 11, color: '#e8e8f0' }}>{io.label}</div>
+            <div style={{ fontSize: 9, color: '#55556a', marginTop: 1 }}>{io.subtitle}</div>
+          </div>
+        </div>
+      ))}
+
+      <div style={{ marginBottom: 16, borderBottom: '1px solid #ffffff10' }} />
+
+      {/* Agents section */}
+      <div style={{ fontSize: 9, color: '#55556a', letterSpacing: '0.12em', marginBottom: 10, paddingBottom: 6, borderBottom: '1px solid #ffffff10' }}>
+        AGENTS
       </div>
 
       {availableAgents.map(agent => {

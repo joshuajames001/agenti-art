@@ -47,6 +47,20 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
     }, 50)
   }, [])
 
+  function addIONode(nodeType: 'input' | 'output', label: string) {
+    const node: PipelineNode = {
+      nodeType,
+      id: Math.random().toString(36),
+      label,
+      status: 'idle',
+      tokensUsed: 0,
+      stepOrder: nodes.length + 1,
+      inputFromStep: nodes.length > 0 ? nodes[nodes.length - 1].id : null,
+    }
+    setNodes(prev => [...prev, node])
+    addLog({ type: 'info', message: `${label} node added to pipeline (step ${node.stepOrder})` })
+  }
+
   function addAgent(agent: Agent) {
     if (usedAgentIds.has(agent.id)) return
     const node: PipelineNode = {
@@ -261,7 +275,7 @@ export function usePipeline({ missionSlug, missionTitle, availableAgents, initia
     logRef,
     sensors,
     usedAgentIds,
-    addLog, addAgent, handleDragEnd, removeNode,
+    addLog, addAgent, addIONode, handleDragEnd, removeNode,
     runPipeline, stopPipeline, savePipeline, resetPipeline,
   }
 }
